@@ -55,16 +55,11 @@ public static class QueryStringSerializer
 
     public static string GetJson<T>(string uri) where T : class
     {
-        var dict = ToObjectDictionary<T>(uri);
+        var dict = QueryHelpers.ParseQuery(uri).ToObjectDictionary(typeof(T));
         return JsonSerializer.Serialize(dict);
     }
 
-    internal static Dictionary<string, object?> ToObjectDictionary<T>(string uri)
-    {
-        return QueryHelpers.ParseQuery(uri).ToObjectDictionary(typeof(T));
-    }
-
-    internal static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type, string namePrefix = "")
+    private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type, string namePrefix = "")
     {
         var dict = new Dictionary<string, object?>();
         
@@ -129,8 +124,7 @@ public static class QueryStringSerializer
 
         return dict;
     }
-
-    internal static Dictionary<string, object?> ToQueryStringDictionary(this object obj, string namePrefix = "")
+    private static Dictionary<string, object?> ToQueryStringDictionary(this object obj, string namePrefix = "")
     {
         var dict = new Dictionary<string, object?>();
 

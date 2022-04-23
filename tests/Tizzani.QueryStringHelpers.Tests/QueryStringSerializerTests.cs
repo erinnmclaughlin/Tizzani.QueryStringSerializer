@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
-using System.Collections.Generic;
 using System.Linq;
 using Tizzani.QueryStringHelpers.Tests.Mocks;
 using Xunit;
 
 namespace Tizzani.QueryStringHelpers.Tests;
+
 public class QueryStringSerializerTests
 {
     [Theory]
@@ -15,38 +15,52 @@ public class QueryStringSerializerTests
     [InlineData(-1)]
     [InlineData(int.MaxValue)]
     [InlineData(int.MinValue)]
-    public void ToQueryStringDictionary_CreatesCorrectDictionary_ForIntegers(int? value)
+    public void GetJson_ReturnsCorrectJson_ForIntegers(int? value)
     {
-        var someClass = new SomeClassWithParameter<int?>(value);
+        var queryString = string.Empty;
 
-        var expectedDictionary = new Dictionary<string, object?>
-        {
-            { nameof(someClass.SomeParameter), value }
-        };
+        if (value != null)
+            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value.ToString());
 
-        var actualDictionary = QueryStringSerializer.ToQueryStringDictionary(someClass);
-        actualDictionary.Should().BeEquivalentTo(expectedDictionary);
+        var expectedJson = value == null ? "{}" : $"{{\"SomeParameter\":{value}}}";
+        var actualJson = QueryStringSerializer.GetJson<SomeClassWithParameter<int?>>(queryString);
+        actualJson.Should().BeEquivalentTo(expectedJson);
     }
 
     [Theory]
     [InlineData(null)]
-    [InlineData(0)]
-    [InlineData(1)]
-    [InlineData(-1)]
-    [InlineData(int.MaxValue)]
-    [InlineData(int.MinValue)]
-    public void ToObjectDictionary_CreatesCorrectDictionary_ForIntegers(int? value)
+    [InlineData("")]
+    [InlineData("  ")]
+    [InlineData("\n \t")]
+    [InlineData("hello, world!")]
+    public void GetJson_ReturnsCorrectJson_ForStrings(string? value)
     {
-        var someClass = new SomeClassWithParameter<int?>(value);
-        var queryString = QueryStringSerializer.Serialize(someClass);
+        var queryString = string.Empty;
 
-        var expectedDictionary = new Dictionary<string, object?>();
+        if (!string.IsNullOrWhiteSpace(value))
+            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value.ToString());
 
-        if (value != null)
-            expectedDictionary.Add(nameof(someClass.SomeParameter), value);
+        var expectedJson = string.IsNullOrWhiteSpace(value) ? "{}" : $"{{\"SomeParameter\":\"{value}\"}}";
+        var actualJson = QueryStringSerializer.GetJson<SomeClassWithParameter<string?>>(queryString);
+        actualJson.Should().BeEquivalentTo(expectedJson);
+    }
 
-        var actualDictionary = QueryStringSerializer.ToObjectDictionary<SomeClassWithParameter<int?>>(queryString);
-        actualDictionary.Should().BeEquivalentTo(expectedDictionary);
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1, 0, 1, 2)]
+    [InlineData(12, 12)]
+    [InlineData(null, 1, 12, 12)]
+    public void GetJson_ReturnsCorrectJson_ForCollections(params int?[] values)
+    {
+        var queryString = string.Empty;
+        var validValues = values.Where(v => v != null);
+
+        foreach (var value in validValues)
+            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value.ToString());
+
+        var expectedJson = $"{{\"SomeParameter\":[{string.Join(',', validValues)}]}}"; 
+        var actualJson = QueryStringSerializer.GetJson<SomeClassWithParameter<int?[]>>(queryString);
+        actualJson.Should().BeEquivalentTo(expectedJson);
     }
 
     [Theory]
@@ -78,25 +92,6 @@ public class QueryStringSerializerTests
         var expectedQueryString = value.HasValue ? $"?SomeParameter={value}" : string.Empty;
         var actualQueryString = QueryStringSerializer.Serialize(someClass);
         actualQueryString.Should().Be(expectedQueryString);
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("  ")]
-    [InlineData("\n \t")]
-    [InlineData("hello, world!")]
-    public void ToDictionary_CreatesCorrectDictionary_ForStrings(string? value)
-    {
-        var someClass = new SomeClassWithParameter<string?>(value);
-
-        var expectedDictionary = new Dictionary<string, object?>
-        {
-            { nameof(someClass.SomeParameter), value }
-        };
-
-        var actualDictionary = QueryStringSerializer.ToQueryStringDictionary(someClass);
-        actualDictionary.Should().BeEquivalentTo(expectedDictionary);
     }
 
     [Theory]
@@ -164,50 +159,5 @@ public class QueryStringSerializerTests
 
         var actualQueryString = QueryStringSerializer.Serialize(someClass);
         actualQueryString.Should().Be(expectedQueryString);
-    }
-
-
-
-
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("  ")]
-    [InlineData("\n \t")]
-    [InlineData("hello, world!")]
-    public void ToObjectDictionary_CreatesCorrectDictionary_ForStrings(string? value)
-    {
-        var someClass = new SomeClassWithParameter<string?>(value);
-        var queryString = QueryStringSerializer.Serialize(someClass);
-
-        var expectedDictionary = new Dictionary<string, object?>();
-
-        if (!string.IsNullOrWhiteSpace(value))
-            expectedDictionary.Add(nameof(someClass.SomeParameter), value);
-
-        var actualDictionary = QueryStringSerializer.ToObjectDictionary<SomeClassWithParameter<string?>>(queryString);
-        actualDictionary.Should().BeEquivalentTo(expectedDictionary);
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData(0)]
-    [InlineData(-1, 0, 1, 2)]
-    [InlineData(12, 12)]
-    [InlineData(null, 1, 12, 12)]
-    public void ToObjectDictionary_CreatesCorrectDictionary_ForCollections(params int?[] values)
-    {
-        var someClass = new SomeClassWithParameter<int?[]>(values);
-        var queryString = QueryStringSerializer.Serialize(someClass);
-
-        var expectedDictionary = new Dictionary<string, object?>();
-        var expectedValues = values?.Where(v => v != null).ToArray();
-
-        if (expectedValues?.Any() == true)
-            expectedDictionary.Add(nameof(someClass.SomeParameter), expectedValues);
-
-        var actualDictionary = QueryStringSerializer.ToObjectDictionary<SomeClassWithParameter<int?[]>>(queryString);
-        actualDictionary.Should().BeEquivalentTo(expectedDictionary);
     }
 }
