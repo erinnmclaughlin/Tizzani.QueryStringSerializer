@@ -46,6 +46,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData(null, null)]
     [InlineData(0)]
     [InlineData(-1, 0, 1, 2)]
     [InlineData(12, 12)]
@@ -53,12 +54,12 @@ public class QueryStringSerializerTests
     public void GetJson_ReturnsCorrectJson_ForCollections(params int?[] values)
     {
         var queryString = string.Empty;
-        var stringValues = values.Select(v => v == null ? "NULL" : v.ToString());
+        var stringValues = values.Where(v => v != null);
 
         foreach (var value in stringValues)
-            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value);
+            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value.ToString());
 
-        var expectedJson = $"{{\"SomeParameter\":[{string.Join(',', stringValues)}]}}"; 
+        var expectedJson = stringValues.Any() ? $"{{\"SomeParameter\":[{string.Join(',', stringValues)}]}}" : "{}"; 
         var actualJson = QueryStringSerializer.GetJson<SomeClassWithParameter<int?[]>>(queryString);
         actualJson.Should().BeEquivalentTo(expectedJson);
     }

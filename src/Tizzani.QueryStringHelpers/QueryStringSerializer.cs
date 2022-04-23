@@ -63,22 +63,24 @@ public static class QueryStringSerializer
     private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type, string namePrefix = "")
     {
         var dict = new Dictionary<string, object?>();
-        
+        var obj = Activator.CreateInstance(type);
+
         foreach (var p in type.GetProperties())
         {
             var name = string.IsNullOrWhiteSpace(namePrefix) ? p.Name : namePrefix + "." + p.Name;
 
+            // Use object's default value if not in query string
             if (!stringDict.ContainsKey(name))
-                continue;
-
-            var stringValue = stringDict[name];
-
-            // Nulls
-            if (stringValue.ToString().Equals("NULL", StringComparison.CurrentCultureIgnoreCase))
             {
-                dict.Add(name, null);
+                var defaultValue = p.GetValue(obj);
+
+                if (defaultValue != null)
+                    dict.Add(name, defaultValue);
+
                 continue;
             }
+
+            var stringValue = stringDict[name];
 
             // Simple cases
             if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
@@ -87,7 +89,9 @@ public static class QueryStringSerializer
                     ? stringValue.ToString()
                     : JsonSerializer.Deserialize(stringValue, p.PropertyType);
 
-                dict.Add(name, value);
+                if (value != null)
+                    dict.Add(name, value);
+
                 continue;
             }
 
@@ -101,7 +105,8 @@ public static class QueryStringSerializer
                     // TODO: Do this better
 
                     var collection = stringValue
-                        .Select(x => x.Equals("NULL", StringComparison.CurrentCultureIgnoreCase) ? null : JsonSerializer.Deserialize(x, enumerableType))
+                        .Select(x => JsonSerializer.Deserialize(x, enumerableType))
+                        .Where(x => x != null)
                         .ToList();
 
                     dict.Add(name, collection);
