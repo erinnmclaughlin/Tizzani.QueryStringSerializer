@@ -53,12 +53,12 @@ public class QueryStringSerializerTests
     public void GetJson_ReturnsCorrectJson_ForCollections(params int?[] values)
     {
         var queryString = string.Empty;
-        var validValues = values.Where(v => v != null);
+        var stringValues = values.Select(v => v == null ? "NULL" : v.ToString());
 
-        foreach (var value in validValues)
-            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value.ToString());
+        foreach (var value in stringValues)
+            queryString = QueryHelpers.AddQueryString(queryString, "SomeParameter", value);
 
-        var expectedJson = $"{{\"SomeParameter\":[{string.Join(',', validValues)}]}}"; 
+        var expectedJson = $"{{\"SomeParameter\":[{string.Join(',', stringValues)}]}}"; 
         var actualJson = QueryStringSerializer.GetJson<SomeClassWithParameter<int?[]>>(queryString);
         actualJson.Should().BeEquivalentTo(expectedJson);
     }

@@ -55,7 +55,8 @@ public static class QueryStringSerializer
 
     public static string GetJson<T>(string uri) where T : class
     {
-        var dict = QueryHelpers.ParseQuery(uri).ToObjectDictionary(typeof(T));
+        var queryParams = QueryHelpers.ParseQuery(uri);
+        var dict = queryParams.ToObjectDictionary(typeof(T));
         return JsonSerializer.Serialize(dict);
     }
 
@@ -71,6 +72,13 @@ public static class QueryStringSerializer
                 continue;
 
             var stringValue = stringDict[name];
+
+            // Nulls
+            if (stringValue.ToString().Equals("NULL", StringComparison.CurrentCultureIgnoreCase))
+            {
+                dict.Add(name, null);
+                continue;
+            }
 
             // Simple cases
             if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
@@ -93,7 +101,7 @@ public static class QueryStringSerializer
                     // TODO: Do this better
 
                     var collection = stringValue
-                        .Select(x => JsonSerializer.Deserialize(x, enumerableType))
+                        .Select(x => x.Equals("NULL", StringComparison.CurrentCultureIgnoreCase) ? null : JsonSerializer.Deserialize(x, enumerableType))
                         .ToList();
 
                     dict.Add(name, collection);
