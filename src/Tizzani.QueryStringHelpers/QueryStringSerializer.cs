@@ -25,11 +25,16 @@ public static class QueryStringSerializer
 
             var type = kvp.Value.GetType();
 
-            if (type.IsCollection())
+            if (type != typeof(JsonElement))
+                continue;
+
+            var jsonElement = (JsonElement)kvp.Value;
+
+            if (jsonElement.ValueKind == JsonValueKind.Array)
             {
-                foreach (var val in (IEnumerable)kvp.Value)
+                foreach (var val in jsonElement.EnumerateArray())
                 {
-                    var valString = val?.ToString();
+                    var valString = val.ToString();
 
                     if (!string.IsNullOrWhiteSpace(valString))
                         uri = QueryHelpers.AddQueryString(uri, kvp.Key, valString);
@@ -46,6 +51,7 @@ public static class QueryStringSerializer
 
         return uri;
     }
+
     public static string Serialize<T>(T obj, string baseUri) where T : class
     {
         return baseUri + Serialize(obj);
@@ -57,34 +63,46 @@ public static class QueryStringSerializer
         return JsonSerializer.Deserialize<T>(json);
     }
 
-    public static string GetJson<T>(string uri) where T : class
+    private static string GetJson<T>(string uri) where T : class
     {
         var queryParams = QueryHelpers.ParseQuery(uri);
         var dict = queryParams.ToObjectDictionary(typeof(T));
         return JsonSerializer.Serialize(dict);
     }
 
-    private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type, string namePrefix = "")
+    private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type)
     {
         var dict = new Dictionary<string, object?>();
         var obj = Activator.CreateInstance(type);
 
         foreach (var p in type.GetProperties())
         {
-            var name = string.IsNullOrWhiteSpace(namePrefix) ? p.Name : namePrefix + "." + p.Name;
+            var name = p.Name;
+
+            // Nested classes
+            if (p.PropertyType.IsClass && !typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+            {
+                var childStringDict = stringDict
+                    .Where(x => x.Key.StartsWith(name + '.'))
+                    .ToDictionary(kvp => kvp.Key.Replace(name + '.', ""), kvp => kvp.Value);
+
+                var childDict = ToObjectDictionary(childStringDict, p.PropertyType);
+                dict.Add(p.Name, childDict);
+                continue;
+            }
 
             // Use object's default value if not in query string
-            if (!stringDict.ContainsKey(name))
+            if (!stringDict.ContainsKey(p.Name))
             {
                 var defaultValue = p.GetValue(obj);
 
                 if (defaultValue != null)
-                    dict.Add(name, defaultValue);
+                    dict.Add(p.Name, defaultValue);
 
                 continue;
             }
 
-            var stringValue = stringDict[name];
+            var stringValue = stringDict[p.Name];
 
             // Simple cases
             if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
@@ -94,7 +112,7 @@ public static class QueryStringSerializer
                     : JsonSerializer.Deserialize(stringValue, p.PropertyType);
 
                 if (value != null)
-                    dict.Add(name, value);
+                    dict.Add(p.Name, value);
 
                 continue;
             }
@@ -102,7 +120,10 @@ public static class QueryStringSerializer
             // Collections
             if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
             {
-                var enumerableType = p.PropertyType.GetGenericArguments()[0];
+                var enumerableType = p.PropertyType.GetElementType();
+
+                if (enumerableType is null)
+                    throw new NotImplementedException(); // I don't know what to do here yet
 
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
@@ -113,7 +134,7 @@ public static class QueryStringSerializer
                         .Where(x => x != null)
                         .ToList();
 
-                    dict.Add(name, collection);
+                    dict.Add(p.Name, collection);
                 }
                 else
                 {
@@ -121,17 +142,6 @@ public static class QueryStringSerializer
                     throw new NotImplementedException();
                 }
 
-                continue;
-            }
-            
-            // Nested classes
-            if (p.PropertyType.IsClass)
-            {
-                var childStringDict = stringDict.Where(x => x.Key.StartsWith(p.Name))
-                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
-                var childDict = ToObjectDictionary(childStringDict, p.PropertyType, p.Name);
-                dict.Add(name, childDict);
                 continue;
             }
 
