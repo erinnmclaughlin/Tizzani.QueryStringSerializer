@@ -119,31 +119,6 @@ public class QueryStringSerializerTests
 
     [Theory]
     [InlineData(null)]
-    [InlineData(0)]
-    [InlineData(-1, 0, 1, 2)]
-    [InlineData(12, 12)]
-    [InlineData(null, 1, 12, 12)]
-    public void ToDictionary_CreatesCorrectDictionary_ForCollections(params int?[] values)
-    {
-        var someClass = new SomeClassWithParameter<int?[]>(values);
-
-        var expectedQueryString = "";
-
-        if (values != null)
-        {
-            var name = nameof(someClass.SomeParameter);
-
-            values.Where(v => v != null).ToList()
-                .ForEach(v => expectedQueryString = QueryHelpers
-                    .AddQueryString(expectedQueryString, name, v.ToString()));
-        }
-
-        var actualQueryString = QueryStringSerializer.Serialize(someClass);
-        actualQueryString.Should().Be(expectedQueryString);
-    }
-
-    [Theory]
-    [InlineData(null)]
     [InlineData("")]
     [InlineData("  ")]
     [InlineData("\n \t")]

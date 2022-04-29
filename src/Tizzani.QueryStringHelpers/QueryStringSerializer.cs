@@ -10,9 +10,13 @@ public static class QueryStringSerializer
 {
     public static string Serialize<T>(T obj) where T : class
     {
-        var dict = obj.ToQueryStringDictionary();
+        var json = JsonSerializer.Serialize(obj);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json);
 
         string uri = "";
+
+        if (dict == null)
+            return uri;
 
         foreach (var kvp in dict)
         {
@@ -133,28 +137,6 @@ public static class QueryStringSerializer
 
             // I don't know how you got here
             throw new InvalidOperationException($"Cannot add type {p.PropertyType} to object dictionary.");
-        }
-
-        return dict;
-    }
-    private static Dictionary<string, object?> ToQueryStringDictionary(this object obj, string namePrefix = "")
-    {
-        var dict = new Dictionary<string, object?>();
-
-        foreach (var p in obj.GetType().GetProperties())
-        {
-            var name = string.IsNullOrWhiteSpace(namePrefix) ? p.Name : namePrefix + "." + p.Name;
-            var value = p.GetValue(obj);
-
-            if (!p.PropertyType.IsClass || typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
-            {
-                dict.Add(name, value);
-            }
-            else
-            {
-                var childDict = value?.ToQueryStringDictionary(name);
-                dict.Add(name, childDict);
-            }
         }
 
         return dict;
