@@ -8,7 +8,7 @@ namespace Tizzani.QueryStringHelpers;
 
 public static class QueryStringSerializer
 {
-    public static string Serialize<T>(T obj) where T : class
+    public static string Serialize(object? obj)
     {
         var json = JsonSerializer.Serialize(obj);
         var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json);
@@ -39,6 +39,14 @@ public static class QueryStringSerializer
                     if (!string.IsNullOrWhiteSpace(valString))
                         uri = QueryHelpers.AddQueryString(uri, kvp.Key, valString);
                 }
+            }
+            else if (jsonElement.ValueKind == JsonValueKind.Object)
+            {
+                var childUri = Serialize(kvp.Value);
+                var childQuery = QueryHelpers.ParseQuery(childUri);
+
+                foreach (var cq in childQuery)
+                    uri = QueryHelpers.AddQueryString(uri, kvp.Key + "." + cq.Key, cq.Value);
             }
             else
             {

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using Tizzani.QueryStringHelpers.Tests.Mocks;
 using Xunit;
 
@@ -101,10 +102,24 @@ public class QueryStringSerializerTests
 
     [Theory]
     [InlineData("?SomeParameter.SomeParameter=1", 1)]
+    [InlineData("?SomeParameter.SomeParameter=-1", -1)]
+    [InlineData("?SomeParameter.SomeParameter=0", 0)]
+    [InlineData("?SomeParameter.SomeParameter=1234", 1234)]
     public void Deserialize_CreatesCorrectObject_ForNestedObjects(string queryString, int expectedValue)
     {
         var result = QueryStringSerializer.Deserialize<SomeClassWithParameter<SomeClassWithParameter<int>>>(queryString);
         result?.SomeParameter.Should().NotBeNull();
         result!.SomeParameter!.SomeParameter.Should().Be(expectedValue);
+    }
+
+    [Theory]
+    [InlineData("?SomeParameter.SomeParameter=1", 1)]
+    public void Serialize_CreatesCorrectQueryString_ForNestedObjects(string expectedQueryString, int value)
+    {
+        var someClass = new SomeClassWithParameter<SomeClassWithParameter<int>>(new SomeClassWithParameter<int>(value));
+
+        var actualQueryString = QueryStringSerializer.Serialize(someClass);
+        var decodedQueryString = HttpUtility.UrlDecode(actualQueryString);
+        decodedQueryString.Should().Be(expectedQueryString);
     }
 }
