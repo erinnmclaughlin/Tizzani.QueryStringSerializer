@@ -114,12 +114,25 @@ public class QueryStringSerializerTests
 
     [Theory]
     [InlineData("?SomeParameter.SomeParameter=1", 1)]
+    [InlineData("?SomeParameter.SomeParameter=-1", -1)]
+    [InlineData("?SomeParameter.SomeParameter=0", 0)]
+    [InlineData("?SomeParameter.SomeParameter=1234", 1234)]
     public void Serialize_CreatesCorrectQueryString_ForNestedObjects(string expectedQueryString, int value)
     {
         var someClass = new SomeClassWithParameter<SomeClassWithParameter<int>>(new SomeClassWithParameter<int>(value));
 
         var actualQueryString = QueryStringSerializer.Serialize(someClass);
-        var decodedQueryString = HttpUtility.UrlDecode(actualQueryString);
-        decodedQueryString.Should().Be(expectedQueryString);
+        actualQueryString.Should().Be(expectedQueryString);
+    }
+
+    [Theory]
+    [InlineData("?SomeParameter.SomeString=hello,world!&SomeParameter.SomeParameter=1", 1, "hello,world!")]
+    public void Serialize_CreatesCorrectQueryString_ForMoreNestedObjects(string expectedQueryString, int intValue, string stringValue)
+    {
+        var someClassWithInt = new SomeClassWithParameter<int>(intValue) { SomeString = stringValue };
+        var someClass = new SomeClassWithParameter<SomeClassWithParameter<int>>(someClassWithInt);
+
+        var actualQueryString = QueryStringSerializer.Serialize(someClass);
+        actualQueryString.Should().Be(expectedQueryString);
     }
 }
