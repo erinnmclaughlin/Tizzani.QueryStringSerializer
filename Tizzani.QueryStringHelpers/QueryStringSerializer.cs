@@ -2,13 +2,12 @@
 using Microsoft.Extensions.Primitives;
 using System.Collections;
 using System.Text.Json;
-using Tizzani.QueryStringHelpers.Extensions;
 
 namespace Tizzani.QueryStringHelpers;
 
 public static class QueryStringSerializer
 {
-    public static string Serialize(object? obj)
+    public static string Serialize<T>(T obj)
     {
         var json = JsonSerializer.Serialize(obj);
         var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json);
@@ -30,6 +29,7 @@ public static class QueryStringSerializer
 
             var jsonElement = (JsonElement)kvp.Value;
 
+            // Collections
             if (jsonElement.ValueKind == JsonValueKind.Array)
             {
                 foreach (var val in jsonElement.EnumerateArray())
@@ -39,32 +39,33 @@ public static class QueryStringSerializer
                     if (!string.IsNullOrWhiteSpace(valString))
                         uri = QueryHelpers.AddQueryString(uri, kvp.Key, valString);
                 }
+
+                continue;
             }
-            else if (jsonElement.ValueKind == JsonValueKind.Object)
+
+            if (jsonElement.ValueKind == JsonValueKind.Object)
             {
                 var childUri = Serialize(kvp.Value);
                 var childQuery = QueryHelpers.ParseQuery(childUri);
 
                 foreach (var cq in childQuery)
                     uri = QueryHelpers.AddQueryString(uri, kvp.Key + "." + cq.Key, cq.Value);
-            }
-            else
-            {
-                var valString = kvp.Value.ToString();
 
-                if (!string.IsNullOrWhiteSpace(valString))
-                    uri = QueryHelpers.AddQueryString(uri, kvp.Key, valString);
+                continue;
             }
+
+            var valueString = kvp.Value.ToString();
+
+            if (!string.IsNullOrWhiteSpace(valueString))
+                uri = QueryHelpers.AddQueryString(uri, kvp.Key, valueString);            
         }
 
         return uri;
     }
-
     public static string Serialize<T>(T obj, string baseUri) where T : class
     {
         return baseUri + Serialize(obj);
     }
-
     public static T? Deserialize<T>(string uri) where T : class
     {
         var json = GetJson<T>(uri);
@@ -77,7 +78,6 @@ public static class QueryStringSerializer
         var dict = queryParams.ToObjectDictionary(typeof(T));
         return JsonSerializer.Serialize(dict);
     }
-
     private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type)
     {
         var dict = new Dictionary<string, object?>();

@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringHelpers"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringHelpers.Tests", "Tizzani.QueryStringHelpers.Tests\Tizzani.QueryStringHelpers.Tests.csproj", "{50660DEF-2FA3-4227-A79C-75577C1185F9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3CBD02B6-FAE5-452D-B13E-E9C87FED212D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleApp", "SampleApp\SampleApp.csproj", "{090EEA00-B714-4A14-8CA0-DB8A65FD72D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{50660DEF-2FA3-4227-A79C-75577C1185F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50660DEF-2FA3-4227-A79C-75577C1185F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50660DEF-2FA3-4227-A79C-75577C1185F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{090EEA00-B714-4A14-8CA0-DB8A65FD72D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{090EEA00-B714-4A14-8CA0-DB8A65FD72D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{090EEA00-B714-4A14-8CA0-DB8A65FD72D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{090EEA00-B714-4A14-8CA0-DB8A65FD72D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{090EEA00-B714-4A14-8CA0-DB8A65FD72D4} = {3CBD02B6-FAE5-452D-B13E-E9C87FED212D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23096769-86AD-40DF-A8BD-F18BB45378C4}

@@ -1,0 +1,30 @@
+﻿@page "/counter"
+@using Tizzani.QueryStringHelpers
+@inject NavigationManager NavigationManager
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @CurrentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+
+    public int CurrentCount { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        var uri = NavigationManager.Uri;
+        var counter = QueryStringSerializer.Deserialize<Counter>(uri)!;
+        CurrentCount = counter.CurrentCount;
+    }
+
+    private void IncrementCount()
+    {
+        CurrentCount++;
+        var queryString = QueryStringSerializer.Serialize(this, "counter");
+        NavigationManager.NavigateTo(queryString);
+    }
+}
