@@ -62,10 +62,12 @@ public static class QueryStringSerializer
 
         return uri;
     }
+
     public static string Serialize<T>(T obj, string baseUri) where T : class
     {
         return baseUri + Serialize(obj);
     }
+
     public static T? Deserialize<T>(string uri) where T : class
     {
         var json = GetJson<T>(uri);
@@ -78,6 +80,7 @@ public static class QueryStringSerializer
         var dict = queryParams.ToObjectDictionary(typeof(T));
         return JsonSerializer.Serialize(dict);
     }
+
     private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type)
     {
         var dict = new Dictionary<string, object?>();
@@ -135,8 +138,6 @@ public static class QueryStringSerializer
 
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
-                    // TODO: Do this better
-
                     var collection = stringValue
                         .Select(x => JsonSerializer.Deserialize(x, enumerableType))
                         .Where(x => x != null)
