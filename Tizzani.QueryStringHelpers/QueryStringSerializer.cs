@@ -7,10 +7,12 @@ namespace Tizzani.QueryStringHelpers;
 
 public static class QueryStringSerializer
 {
-    public static string Serialize<T>(T obj)
+    public static string Serialize<T>(T obj, QueryStringSerializerOptions? options = null)
     {
-        var json = JsonSerializer.Serialize(obj);
-        var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json);
+        options ??= new QueryStringSerializerOptions();
+
+        var json = JsonSerializer.Serialize(obj, options.GetJsonSerializerOptions());
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json, options.GetJsonSerializerOptions());
 
         string uri = "";
 
@@ -63,9 +65,9 @@ public static class QueryStringSerializer
         return uri.TrimStart('?');
     }
 
-    public static string Serialize<T>(T obj, string baseUri) where T : class
+    public static string Serialize<T>(T obj, string baseUri, QueryStringSerializerOptions? options = null) where T : class
     {
-        return $"{baseUri}?{Serialize(obj)}";
+        return $"{baseUri}?{Serialize(obj, options)}";
     }
 
     public static T? Deserialize<T>(string uri) where T : class

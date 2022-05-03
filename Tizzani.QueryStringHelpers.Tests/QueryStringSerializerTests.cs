@@ -134,4 +134,26 @@ public class QueryStringSerializerTests
         var actualQueryString = QueryStringSerializer.Serialize(someClass);
         actualQueryString.Should().Be(expectedQueryString);
     }
+
+    [Fact]
+    public void Serialize_SerializesEnumAsString_WithDefaultOptions()
+    {
+        var someClass = new SomeClassWithParameter<SomeEnum>(SomeEnum.BigBanana);
+        var expectedQueryString = "SomeParameter=BigBanana";
+
+        var actualQueryString = QueryStringSerializer.Serialize(someClass);
+        actualQueryString.Should().Be(expectedQueryString);
+    }
+
+    [Fact]
+    public void Serialize_SerializesEnumAsInt_WhenOptionsHaveEnumAsStringAsFalse()
+    {
+        var options = new QueryStringSerializerOptions { EnumsAsStrings = false };
+        var someClass = new SomeClassWithParameter<SomeEnum>(SomeEnum.BigBanana);
+        var expectedQueryString = $"SomeParameter={(int)SomeEnum.BigBanana}";
+
+        var actualQueryString = QueryStringSerializer.Serialize(someClass, options);
+        actualQueryString.Should().Be(expectedQueryString);
+    }
+
 }
