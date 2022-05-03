@@ -1,8 +1,8 @@
-## Query String Helpers
+# Query String Helpers
 
 `Tizzani.QueryStringHelpers` provides methods for serializing & deserializing objects as URL-encoded query strings.
 
-### Example Usage
+## Example Usage
 
 Given the following classes:
 
@@ -17,7 +17,7 @@ class Person
 record Name(string Given, string? Middle, string Family);
 ```
 
-#### Serialization
+### Serialization
 
 ```c#
 var person = new Person() {
@@ -33,7 +33,7 @@ var personQs = QueryStringHelpers.Serialize(person);
 var personUrl = QueryStringHelpers.Serialize(person, "https://mysite.com/directory/search");
 ```
 
-#### Deserialization
+### Deserialization
 
 ```c#
 // also works if personQs has a leading "?"
@@ -42,14 +42,16 @@ var personQs = "Name.Given=Some&Name.Family=Person&Age=25&FavoriteWebsites=https
 var person = QueryStringHelpers.Deserialize(personQs);
 ```
 
-### Other Features
+## Other Features
 
-* Enums are supported
-* Enums are serialized as integers by default, but can be configured to serialize as strings by using `QueryStringSerializerOptions` (passed into `QueryStringHelpers.Serialize`)
+* `Enum`s are supported
+* `Enum`s are serialized as `int`s by default, but can be configured to serialize as `string`s by using `QueryStringSerializerOptions` (passed into `QueryStringHelpers.Serialize`)
+* Many basic collection types (such as `IList`, `System.Arrray`, `ICollection`) are supported
+* `class`, `record`, `struct` and `readonly struct` are all supported
 
-### Known Limitations
+## Known Limitations
 
-* Lists of objects are not yet supported (arrays of primitives and enums are!)
+* Collections of *objects* are not yet supported; only of primitives
 * Dictionaries are not yet supported
 
 
