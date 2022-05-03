@@ -110,13 +110,8 @@ public static class QueryStringSerializer
             var stringValue = stringDict[p.Name];
 
             // Lists
-            if (p.PropertyType.IsCollection())
+            if (TryGetCollectionType(p.PropertyType, out var enumerableType))
             {
-                var enumerableType = GetCollectionType(p.PropertyType);
-
-                if (enumerableType == null)
-                    continue; // TODO: should we do something here?
-
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
                     var collection = stringValue
@@ -156,22 +151,18 @@ public static class QueryStringSerializer
         return dict;
     }
 
-    private static Type? GetCollectionType(Type type)
+    private static bool TryGetCollectionType(Type type, out Type collectionType)
     {
         foreach (var i in type.GetInterfaces())
         {
             if (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>))
             {
-                return i.GenericTypeArguments[0];
+                collectionType = i.GenericTypeArguments[0];
+                return true;
             }
         }
-        
-        return null;
-    }
 
-    private static bool IsCollection(this Type type)
-    {
-        return type != typeof(string) && type.GetInterfaces()
-            .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>));
+        collectionType = default!;
+        return false;
     }
 }
