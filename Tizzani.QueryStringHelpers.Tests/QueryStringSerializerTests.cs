@@ -134,4 +134,29 @@ public class QueryStringSerializerTests
         var actualQueryString = QueryStringSerializer.Serialize(someClass);
         actualQueryString.Should().Be(expectedQueryString);
     }
+
+    [Theory]
+    [InlineData("SomeString=Anything", "Anything")]
+    public void Deserialize_CreatesCorrectObject_ForRecords(string queryString, string expectedValue)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeRecord>(queryString);
+        result?.SomeString.Should().NotBeNull();
+        result!.SomeString.Should().Be(expectedValue);
+    }
+
+    [Theory]
+    [InlineData("SomeString=Anything", "Anything")]
+    public void Deserialize_CreatesCorrectObject_ForStructs(string queryString, string expectedValue)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeStruct>(queryString);
+        result.SomeString.Should().Be(expectedValue);
+    }
+
+    [Theory]
+    [InlineData("SomeString=Anything", "Anything")]
+    public void Deserialize_CreatesCorrectObject_ForReadonlyStructs(string queryString, string expectedValue)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeReadonlyStruct>(queryString);
+        result.SomeString.Should().Be(expectedValue);
+    }
 }

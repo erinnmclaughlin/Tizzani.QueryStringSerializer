@@ -63,18 +63,18 @@ public static class QueryStringSerializer
         return uri.TrimStart('?');
     }
 
-    public static string Serialize<T>(T obj, string baseUri) where T : class
+    public static string Serialize<T>(T obj, string baseUri)
     {
         return $"{baseUri}?{Serialize(obj)}";
     }
 
-    public static T? Deserialize<T>(string uri) where T : class
+    public static T? Deserialize<T>(string uri)
     {
         var json = GetJson<T>(uri);
         return JsonSerializer.Deserialize<T>(json);
     }
 
-    private static string GetJson<T>(string uri) where T : class
+    private static string GetJson<T>(string uri)
     {
         var queryParams = QueryHelpers.ParseQuery(uri);
         var dict = queryParams.ToObjectDictionary(typeof(T));
