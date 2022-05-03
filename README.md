@@ -37,7 +37,7 @@ var personUrl = QueryStringHelpers.Serialize(person, "https://mysite.com/directo
 
 ```c#
 // also works if personQs has a leading "?"
-var personQs = "Name.Given=Some&Name.Family=Person&Age=25&FavoriteWebsites=https%3A%2F%2Fgithub.com%2FTizzani";
+var personQs = "Name.Given=Some&Name.Family=Person&Age=25&FavoriteWebsites=https%3A%2F%2Fgithub.com%2Ferinnmclaughlin";
 
 var person = QueryStringHelpers.Deserialize(personQs);
 ```
