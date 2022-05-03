@@ -60,12 +60,12 @@ public static class QueryStringSerializer
                 uri = QueryHelpers.AddQueryString(uri, kvp.Key, valueString);            
         }
 
-        return uri;
+        return uri[1..];
     }
 
     public static string Serialize<T>(T obj, string baseUri) where T : class
     {
-        return baseUri + Serialize(obj);
+        return $"{baseUri}?{Serialize(obj)}";
     }
 
     public static T? Deserialize<T>(string uri) where T : class
