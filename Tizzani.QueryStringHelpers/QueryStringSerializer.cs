@@ -123,9 +123,17 @@ public static class QueryStringSerializer
             }
 
             // Lists
-            if (typeof(IList).IsAssignableFrom(p.PropertyType))
+            if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
             {
-                var enumerableType = p.PropertyType.GetGenericArguments()[0];
+                var interfaces = p.PropertyType.GetInterfaces();
+
+                var enumerableType = interfaces
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    .Select(i => i.GetGenericArguments()[0])
+                    .FirstOrDefault();
+
+                if (enumerableType == null)
+                    continue; // TODO: should we do something here?
 
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
