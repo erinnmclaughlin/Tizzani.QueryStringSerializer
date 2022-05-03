@@ -89,14 +89,12 @@ public static class QueryStringSerializer
 
         foreach (var p in type.GetProperties())
         {
-            var name = p.Name;
-
             // Nested classes
             if (p.PropertyType.IsClass && !typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
             {
                 var childStringDict = stringDict
-                    .Where(x => x.Key.StartsWith(name + '.'))
-                    .ToDictionary(kvp => kvp.Key.Replace(name + '.', ""), kvp => kvp.Value);
+                    .Where(x => x.Key.StartsWith(p.Name + '.'))
+                    .ToDictionary(kvp => kvp.Key.Replace(p.Name + '.', ""), kvp => kvp.Value);
 
                 var childDict = ToObjectDictionary(childStringDict, p.PropertyType);
                 dict.Add(p.Name, childDict);
@@ -111,32 +109,9 @@ public static class QueryStringSerializer
 
             var stringValue = stringDict[p.Name];
 
-            // Simple cases
-            if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
-            {
-                var value = p.PropertyType == typeof(string) 
-                    ? stringValue.ToString()
-                    : JsonSerializer.Deserialize(stringValue, p.PropertyType);
-
-                if (value != null)
-                    dict.Add(p.Name, value);
-
-                continue;
-            }
-
             // Lists
-            if (typeof(IList).IsAssignableFrom(p.PropertyType))
+            if (TryGetCollectionType(p.PropertyType, out var enumerableType))
             {
-                var interfaces = p.PropertyType.GetInterfaces();
-
-                var enumerableType = interfaces
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IList<>))
-                    .Select(i => i.GetGenericArguments()[0])
-                    .FirstOrDefault();
-
-                if (enumerableType == null)
-                    continue; // TODO: should we do something here?
-
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
                     var collection = stringValue
@@ -155,10 +130,39 @@ public static class QueryStringSerializer
                 continue;
             }
 
+            // Simple cases
+            if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
+            {
+                var str = stringValue.ToString();
+
+                var value = p.PropertyType == typeof(string) 
+                    ? str : JsonSerializer.Deserialize(stringValue.ToString(), p.PropertyType);
+
+                if (value != null)
+                    dict.Add(p.Name, value);
+
+                continue;
+            }
+
             // I don't know how you got here
             throw new InvalidOperationException($"Cannot add type {p.PropertyType} to object dictionary.");
         }
 
         return dict;
+    }
+
+    private static bool TryGetCollectionType(Type type, out Type collectionType)
+    {
+        foreach (var i in type.GetInterfaces())
+        {
+            if (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>))
+            {
+                collectionType = i.GenericTypeArguments[0];
+                return true;
+            }
+        }
+
+        collectionType = default!;
+        return false;
     }
 }

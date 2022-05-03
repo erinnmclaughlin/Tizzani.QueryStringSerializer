@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,9 +81,57 @@ public class QueryStringSerializerTests
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
     [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
     [InlineData("SomeParameter=1", 1)]
+    public void Deserialize_CreatesCorrectObject_ForLists(string queryString, params int[] expectedValues)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeClassWithParameter<List<int>>>(queryString);
+        result.Should().NotBeNull();
+        result!.SomeParameter.Should().BeEquivalentTo(expectedValues);
+    }
+
+    [Theory]
+    [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
+    [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
+    [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
+    [InlineData("SomeParameter=1", 1)]
+    public void Deserialize_CreatesCorrectObject_ForILists(string queryString, params int[] expectedValues)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeClassWithParameter<IList<int>>>(queryString);
+        result.Should().NotBeNull();
+        result!.SomeParameter.Should().BeEquivalentTo(expectedValues);
+    }
+
+    [Theory]
+    [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
+    [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
+    [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
+    [InlineData("SomeParameter=1", 1)]
     public void Serialize_CreatesCorrectQueryString_ForArrays(string expectedQueryString, params int[] value)
     {
         var someClass = new SomeClassWithParameter<int[]>(value);
+        var actualQueryString = QueryStringSerializer.Serialize(someClass);
+        actualQueryString.Should().Be(expectedQueryString);
+    }
+
+    [Theory]
+    [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
+    [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
+    [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
+    [InlineData("SomeParameter=1", 1)]
+    public void Serialize_CreatesCorrectQueryString_ForSystemArray(string expectedQueryString, params int[] value)
+    {
+        var someClass = new SomeClassWithParameter<Array>(value);
+        var actualQueryString = QueryStringSerializer.Serialize(someClass);
+        actualQueryString.Should().Be(expectedQueryString);
+    }
+
+    [Theory]
+    [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
+    [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
+    [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
+    [InlineData("SomeParameter=1", 1)]
+    public void Serialize_CreatesCorrectQueryString_ForICollection(string expectedQueryString, params int[] value)
+    {
+        var someClass = new SomeClassWithParameter<ICollection<int>>(value);
         var actualQueryString = QueryStringSerializer.Serialize(someClass);
         actualQueryString.Should().Be(expectedQueryString);
     }
