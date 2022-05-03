@@ -84,7 +84,6 @@ public static class QueryStringSerializer
     private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type)
     {
         var dict = new Dictionary<string, object?>();
-        //var obj = Activator.CreateInstance(type);
 
         foreach (var p in type.GetProperties())
         {
