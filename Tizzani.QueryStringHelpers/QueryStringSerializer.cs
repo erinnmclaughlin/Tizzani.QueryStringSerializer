@@ -114,9 +114,7 @@ public static class QueryStringSerializer
             // Simple cases
             if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
             {
-                var value = p.PropertyType == typeof(string) 
-                    ? stringValue.ToString()
-                    : JsonSerializer.Deserialize(stringValue, p.PropertyType);
+                var value = JsonDeserialize(stringValue, p.PropertyType);
 
                 if (value != null)
                     dict.Add(p.Name, value);
@@ -160,5 +158,29 @@ public static class QueryStringSerializer
         }
 
         return dict;
+    }
+
+    private static object? JsonDeserialize(StringValues stringValue, Type type)
+    {
+        if (type == typeof(string))
+            return stringValue.ToString();
+        
+        if (GetCollectionType(type) is Type collectionType)
+            return JsonSerializer.Deserialize($"[{stringValue}]", typeof(List<>).MakeGenericType(collectionType));
+
+        return JsonSerializer.Deserialize(stringValue, type);
+    }
+
+    private static Type? GetCollectionType(Type type)
+    {
+        foreach (var i in type.GetInterfaces())
+        {
+            if (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>))
+            {
+                return i.GenericTypeArguments[0];
+            }
+        }
+        
+        return null;
     }
 }
