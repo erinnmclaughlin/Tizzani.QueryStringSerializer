@@ -84,7 +84,6 @@ public static class QueryStringSerializer
     private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type)
     {
         var dict = new Dictionary<string, object?>();
-        var obj = Activator.CreateInstance(type);
 
         foreach (var p in type.GetProperties())
         {
@@ -102,14 +101,9 @@ public static class QueryStringSerializer
                 continue;
             }
 
-            // Use object's default value if not in query string
+            // if value is not in query string, skip (class default value will be used)
             if (!stringDict.ContainsKey(p.Name))
             {
-                var defaultValue = p.GetValue(obj);
-
-                if (defaultValue != null)
-                    dict.Add(p.Name, defaultValue);
-
                 continue;
             }
 
@@ -128,13 +122,10 @@ public static class QueryStringSerializer
                 continue;
             }
 
-            // Collections
-            if (typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+            // Lists
+            if (typeof(IList).IsAssignableFrom(p.PropertyType))
             {
-                var enumerableType = p.PropertyType.GetElementType();
-
-                if (enumerableType is null)
-                    throw new NotImplementedException(); // I don't know what to do here yet
+                var enumerableType = p.PropertyType.GetGenericArguments()[0];
 
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
