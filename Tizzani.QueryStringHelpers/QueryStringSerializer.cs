@@ -10,9 +10,10 @@ public static class QueryStringSerializer
     public static string Serialize<T>(T obj, QueryStringSerializerOptions? options = null)
     {
         options ??= new QueryStringSerializerOptions();
+        var jsonSerializerOptions = options.GetJsonSerializerOptions();
 
-        var json = JsonSerializer.Serialize(obj, options.GetJsonSerializerOptions());
-        var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json, options.GetJsonSerializerOptions());
+        var json = JsonSerializer.Serialize(obj, jsonSerializerOptions);
+        var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json, jsonSerializerOptions);
 
         string uri = "";
 
@@ -70,20 +71,23 @@ public static class QueryStringSerializer
         return $"{baseUri}?{Serialize(obj, options)}";
     }
 
-    public static T? Deserialize<T>(string uri)
+    public static T? Deserialize<T>(string uri, QueryStringSerializerOptions? options = null)
     {
-        var json = GetJson<T>(uri);
-        return JsonSerializer.Deserialize<T>(json);
+        options ??= new QueryStringSerializerOptions();
+        var jsonSerializerOptions = options.GetJsonSerializerOptions();
+
+        var json = GetJson<T>(uri, jsonSerializerOptions);
+        return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
     }
 
-    private static string GetJson<T>(string uri)
+    private static string GetJson<T>(string uri, JsonSerializerOptions jsonSerializerOptions)
     {
         var queryParams = QueryHelpers.ParseQuery(uri);
-        var dict = queryParams.ToObjectDictionary(typeof(T));
-        return JsonSerializer.Serialize(dict);
+        var dict = queryParams.ToObjectDictionary(typeof(T), jsonSerializerOptions);
+        return JsonSerializer.Serialize(dict, jsonSerializerOptions);
     }
 
-    private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type)
+    private static Dictionary<string, object?> ToObjectDictionary(this Dictionary<string, StringValues> stringDict, Type type, JsonSerializerOptions jsonSerializerOptions)
     {
         var dict = new Dictionary<string, object?>();
 
@@ -96,7 +100,7 @@ public static class QueryStringSerializer
                     .Where(x => x.Key.StartsWith(p.Name + '.'))
                     .ToDictionary(kvp => kvp.Key.Replace(p.Name + '.', ""), kvp => kvp.Value);
 
-                var childDict = ToObjectDictionary(childStringDict, p.PropertyType);
+                var childDict = ToObjectDictionary(childStringDict, p.PropertyType, jsonSerializerOptions);
                 dict.Add(p.Name, childDict);
                 continue;
             }
@@ -115,7 +119,7 @@ public static class QueryStringSerializer
                 if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
                     var collection = stringValue
-                        .Select(x => JsonSerializer.Deserialize(x, enumerableType))
+                        .Select(x => JsonSerializer.Deserialize(x, enumerableType, jsonSerializerOptions))
                         .Where(x => x != null)
                         .ToList();
 
@@ -136,7 +140,7 @@ public static class QueryStringSerializer
                 var str = stringValue.ToString();
 
                 var value = p.PropertyType == typeof(string) 
-                    ? str : JsonSerializer.Deserialize(stringValue.ToString(), p.PropertyType);
+                    ? str : JsonSerializer.Deserialize(stringValue.ToString(), p.PropertyType, jsonSerializerOptions);
 
                 if (value != null)
                     dict.Add(p.Name, value);
