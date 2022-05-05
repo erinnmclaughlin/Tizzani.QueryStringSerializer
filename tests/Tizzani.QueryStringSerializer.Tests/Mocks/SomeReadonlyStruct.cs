@@ -1,4 +1,4 @@
-﻿namespace Tizzani.QueryStringHelpers.Tests.Mocks;
+﻿namespace Tizzani.QueryStringSerializer.Tests.Mocks;
 
 internal readonly struct SomeReadonlyStruct
 {

@@ -3,10 +3,10 @@ using FluentAssertions;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Collections.Generic;
 using System.Linq;
-using Tizzani.QueryStringHelpers.Tests.Mocks;
+using Tizzani.QueryStringSerializer.Tests.Mocks;
 using Xunit;
 
-namespace Tizzani.QueryStringHelpers.Tests;
+namespace Tizzani.QueryStringSerializer.Tests;
 
 public class QueryStringSerializerTests
 {

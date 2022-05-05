@@ -5,11 +5,11 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3CBD02B6-FAE5-452D-B13E-E9C87FED212D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringHelpers", "src\Tizzani.QueryStringHelpers\Tizzani.QueryStringHelpers.csproj", "{FEF05C40-DBDA-49C4-9649-2B1B48DEC88E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringHelpers.Tests", "tests\Tizzani.QueryStringHelpers.Tests\Tizzani.QueryStringHelpers.Tests.csproj", "{4CCE4D0F-7816-40F3-969B-9EB02D55901F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApp", "samples\SampleApp\SampleApp.csproj", "{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializer", "src\Tizzani.QueryStringSerializer\Tizzani.QueryStringSerializer.csproj", "{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializer.Tests", "tests\Tizzani.QueryStringSerializer.Tests\Tizzani.QueryStringSerializer.Tests.csproj", "{92A7B016-DB03-41EB-AE12-012685696265}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,18 +17,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{FEF05C40-DBDA-49C4-9649-2B1B48DEC88E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FEF05C40-DBDA-49C4-9649-2B1B48DEC88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FEF05C40-DBDA-49C4-9649-2B1B48DEC88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FEF05C40-DBDA-49C4-9649-2B1B48DEC88E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4CCE4D0F-7816-40F3-969B-9EB02D55901F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4CCE4D0F-7816-40F3-969B-9EB02D55901F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4CCE4D0F-7816-40F3-969B-9EB02D55901F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4CCE4D0F-7816-40F3-969B-9EB02D55901F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92A7B016-DB03-41EB-AE12-012685696265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92A7B016-DB03-41EB-AE12-012685696265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92A7B016-DB03-41EB-AE12-012685696265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92A7B016-DB03-41EB-AE12-012685696265}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

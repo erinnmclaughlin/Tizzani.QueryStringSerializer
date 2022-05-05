@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Tizzani.QueryStringHelpers;
+namespace Tizzani.QueryStringSerializer;
 
 public class QueryStringSerializerOptions
 {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Primitives;
 using System.Collections;
 using System.Text.Json;
 
-namespace Tizzani.QueryStringHelpers;
+namespace Tizzani.QueryStringSerializer;
 
 public static class QueryStringSerializer
 {
