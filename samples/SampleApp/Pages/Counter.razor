@@ -1,5 +1,6 @@
 ﻿@page "/counter"
 @using Tizzani.QueryStringSerializer.Blazor
+@implements IDisposable
 @inject NavigationManager NavigationManager
 
 <PageTitle>Counter</PageTitle>
@@ -14,15 +15,32 @@
 
     public int CurrentCount { get; set; }
 
-    protected override void OnParametersSet()
+    public void Dispose()
     {
-        var counter = NavigationManager.GetQueryObject<Counter>();
-        CurrentCount = counter?.CurrentCount ?? CurrentCount;
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+
+    protected override void OnInitialized()
+    {
+        SetCurrentCount();
+        NavigationManager.LocationChanged += HandleLocationChanged;
     }
 
     private void IncrementCount()
     {
         CurrentCount++;
         NavigationManager.NavigateToWithQuery("counter", this);
+    }
+
+    private void SetCurrentCount()
+    {
+        var counter = NavigationManager.GetQueryObject<Counter>();
+        CurrentCount = counter?.CurrentCount ?? CurrentCount;        
+    }
+
+    private void HandleLocationChanged(object? obj, LocationChangedEventArgs e)
+    {
+        SetCurrentCount();
+        StateHasChanged();
     }
 }
