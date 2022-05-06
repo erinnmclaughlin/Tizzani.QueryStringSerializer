@@ -139,12 +139,19 @@ public static class QueryStringSerializer
             {
                 var str = stringValue.ToString();
 
-                var value = p.PropertyType == typeof(string) 
-                    ? str : JsonSerializer.Deserialize(stringValue.ToString(), p.PropertyType, jsonSerializerOptions);
-
-                if (value != null)
+                if (p.PropertyType.IsEnum && Enum.TryParse(p.PropertyType, str, out var value))
+                {
                     dict.Add(p.Name, value);
+                    continue;
+                }
 
+                if (p.PropertyType == typeof(string))
+                {
+                    dict.Add(p.Name, str);
+                    continue;
+                }
+
+                dict.Add(p.Name, JsonSerializer.Deserialize(str, p.PropertyType, jsonSerializerOptions));
                 continue;
             }
 

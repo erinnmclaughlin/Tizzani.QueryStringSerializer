@@ -230,4 +230,16 @@ public class QueryStringSerializerTests
         actualQueryString.Should().Be(expectedQueryString);
     }
 
+    [Fact]
+    public void Deserialize_CreatesCorrectObject_ForNestedClassesWithEnums()
+    {
+        var queryString = "SomeParameter.SomeParameter=Milk";
+        var someClass = new SomeClassWithParameter<SomeClassWithParameter<SomeEnum>>
+        {
+            SomeParameter = new SomeClassWithParameter<SomeEnum>(SomeEnum.Milk)
+        };
+
+        var result = QueryStringSerializer.Deserialize<SomeClassWithParameter<SomeClassWithParameter<SomeEnum>>>(queryString);
+        result!.SomeParameter!.SomeParameter.Should().Be(someClass.SomeParameter.SomeParameter);
+    }
 }
