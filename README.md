@@ -45,7 +45,7 @@ var person = QueryStringSerializer.Deserialize(personQs);
 ## Other Features
 
 * `Enum`s are supported
-* `Enum`s are serialized as `int`s by default, but can be configured to serialize as `string`s by using `QueryStringSerializerOptions` (passed into `QueryStringSerializer.Serialize`)
+* `Enum`s are serialized as `string`s by default, but can be configured to serialize as `int`s by using `QueryStringSerializerOptions`
 * Many basic collection types (such as `IList`, `System.Arrray`, `ICollection`) are supported
 * `class`, `record`, `struct` and `readonly struct` are all supported
 
