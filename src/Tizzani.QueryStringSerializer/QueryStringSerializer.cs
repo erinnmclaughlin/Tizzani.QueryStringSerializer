@@ -116,7 +116,15 @@ public static class QueryStringSerializer
             // Lists
             if (TryGetCollectionType(p.PropertyType, out var enumerableType))
             {
-                if (!enumerableType.IsClass || enumerableType == typeof(string))
+                if (enumerableType.IsEnum)
+                {
+                    var collection = stringValue
+                        .Select(x => Enum.Parse(enumerableType, x))
+                        .ToList();
+
+                    dict.Add(p.Name, collection);
+                }
+                else if (!enumerableType.IsClass || enumerableType == typeof(string))
                 {
                     var collection = stringValue
                         .Select(x => JsonSerializer.Deserialize(x, enumerableType, jsonSerializerOptions))

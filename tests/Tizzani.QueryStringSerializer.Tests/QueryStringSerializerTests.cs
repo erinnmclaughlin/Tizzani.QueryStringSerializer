@@ -76,6 +76,14 @@ public class QueryStringSerializerTests
         result!.SomeParameter.Should().BeEquivalentTo(expectedValues);
     }
 
+    [Fact]
+    public void Deserialize_CreatesCorrectObject_ForListOfEnums()
+    {
+        var qs = "SomeParameter=Milk&SomeParameter=Sugar";
+        var result = QueryStringSerializer.Deserialize<SomeClassWithParameter<List<SomeEnum>>>(qs);
+        result!.SomeParameter.Should().BeEquivalentTo(new List<SomeEnum> { SomeEnum.Milk, SomeEnum.Sugar });
+    }
+
     [Theory]
     [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
