@@ -9,8 +9,11 @@
     <RepositoryUrl>https://github.com/erinnmclaughlin/Tizzani.QueryStringHelpers</RepositoryUrl>
     <Authors>erinnmclaughlin, BenMakesGames</Authors>
     <Company />
-    <Copyright>2022</Copyright>
+    <Copyright>2022 Erin McLaughlin</Copyright>
     <Description>Tizzani.QueryStringHelpers provides methods for serializing &amp; deserializing objects as URL-encoded query strings.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion></AssemblyVersion>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
