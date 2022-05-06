@@ -1,6 +1,6 @@
-# Query String Helpers
+# Query String Serializer
 
-`Tizzani.QueryStringHelpers` provides methods for serializing & deserializing objects as URL-encoded query strings.
+`Tizzani.QueryStringSerializer` provides methods for serializing & deserializing objects as URL-encoded query strings.
 
 ## Example Usage
 
@@ -27,10 +27,10 @@ var person = new Person() {
 }
 
 // get a plain query string, suitable for use in a POST request body:
-var personQs = QueryStringHelpers.Serialize(person);
+var personQs = QueryStringSerializer.Serialize(person);
 
 // get the query string appended to an existing URL:
-var personUrl = QueryStringHelpers.Serialize(person, "https://mysite.com/directory/search");
+var personUrl = QueryStringSerializer.Serialize(person, "https://mysite.com/directory/search");
 ```
 
 ### Deserialization
@@ -39,13 +39,13 @@ var personUrl = QueryStringHelpers.Serialize(person, "https://mysite.com/directo
 // also works if personQs has a leading "?"
 var personQs = "Name.Given=Some&Name.Family=Person&Age=25&FavoriteWebsites=https%3A%2F%2Fgithub.com%2Ferinnmclaughlin";
 
-var person = QueryStringHelpers.Deserialize(personQs);
+var person = QueryStringSerializer.Deserialize(personQs);
 ```
 
 ## Other Features
 
 * `Enum`s are supported
-* `Enum`s are serialized as `int`s by default, but can be configured to serialize as `string`s by using `QueryStringSerializerOptions` (passed into `QueryStringHelpers.Serialize`)
+* `Enum`s are serialized as `int`s by default, but can be configured to serialize as `string`s by using `QueryStringSerializerOptions` (passed into `QueryStringSerializer.Serialize`)
 * Many basic collection types (such as `IList`, `System.Arrray`, `ICollection`) are supported
 * `class`, `record`, `struct` and `readonly struct` are all supported
 
