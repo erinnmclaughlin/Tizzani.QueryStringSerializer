@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializer.Tests", "tests\Tizzani.QueryStringSerializer.Tests\Tizzani.QueryStringSerializer.Tests.csproj", "{92A7B016-DB03-41EB-AE12-012685696265}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tizzani.QueryStringSerializer.Blazor", "src\Tizzani.QueryStringSerializer.Blazor\Tizzani.QueryStringSerializer.Blazor.csproj", "{CFFBF1B5-6FA3-4E39-8549-08A168299189}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{92A7B016-DB03-41EB-AE12-012685696265}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92A7B016-DB03-41EB-AE12-012685696265}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92A7B016-DB03-41EB-AE12-012685696265}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

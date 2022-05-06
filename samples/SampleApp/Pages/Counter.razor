@@ -1,5 +1,5 @@
 ﻿@page "/counter"
-@using Tizzani.QueryStringSerializer
+@using Tizzani.QueryStringSerializer.Blazor
 @inject NavigationManager NavigationManager
 
 <PageTitle>Counter</PageTitle>
@@ -16,15 +16,13 @@
 
     protected override void OnParametersSet()
     {
-        var uri = NavigationManager.Uri;
-        var counter = QueryStringSerializer.Deserialize<Counter>(uri)!;
-        CurrentCount = counter.CurrentCount;
+        var counter = NavigationManager.GetQueryObject<Counter>();
+        CurrentCount = counter?.CurrentCount ?? CurrentCount;
     }
 
     private void IncrementCount()
     {
         CurrentCount++;
-        var queryString = QueryStringSerializer.Serialize(this, "counter");
-        NavigationManager.NavigateTo(queryString);
+        NavigationManager.NavigateToWithQuery("counter", this);
     }
 }

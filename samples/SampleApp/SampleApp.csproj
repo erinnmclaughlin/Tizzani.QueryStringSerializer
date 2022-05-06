@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Tizzani.QueryStringSerializer\Tizzani.QueryStringSerializer.csproj" />
+    <ProjectReference Include="..\..\src\Tizzani.QueryStringSerializer.Blazor\Tizzani.QueryStringSerializer.Blazor.csproj" />
   </ItemGroup>
 
 </Project>
