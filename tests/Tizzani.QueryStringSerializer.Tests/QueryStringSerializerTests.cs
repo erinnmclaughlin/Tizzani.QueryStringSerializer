@@ -12,6 +12,7 @@ public class QueryStringSerializerTests
 {
 
     [Theory]
+    [InlineData("?SomeParameter=hello, world!", "hello, world!")]
     [InlineData("SomeParameter=hello, world!", "hello, world!")]
     [InlineData("SomeParameter=hello,+world!", "hello, world!")]
     [InlineData("SomeParameter=hello,%20world!", "hello, world!")]
@@ -38,6 +39,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter=0", 0)]
     [InlineData("SomeParameter=0", 0)]
     [InlineData("SomeParameter=1", 1)]
     [InlineData("SomeParameter=-1", -1)]
@@ -65,6 +67,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
     [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
@@ -77,6 +80,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
     [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
@@ -89,6 +93,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
     [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
@@ -149,6 +154,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter.SomeParameter=1", 1)]
     [InlineData("SomeParameter.SomeParameter=1", 1)]
     [InlineData("SomeParameter.SomeParameter=-1", -1)]
     [InlineData("SomeParameter.SomeParameter=0", 0)]
@@ -185,6 +191,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeString=Anything", "Anything")]
     [InlineData("SomeString=Anything", "Anything")]
     public void Deserialize_CreatesCorrectObject_ForRecords(string queryString, string expectedValue)
     {
@@ -194,6 +201,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeString=Anything", "Anything")]
     [InlineData("SomeString=Anything", "Anything")]
     public void Deserialize_CreatesCorrectObject_ForStructs(string queryString, string expectedValue)
     {
@@ -202,6 +210,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeString=Anything", "Anything")]
     [InlineData("SomeString=Anything", "Anything")]
     public void Deserialize_CreatesCorrectObject_ForReadonlyStructs(string queryString, string expectedValue)
     {
