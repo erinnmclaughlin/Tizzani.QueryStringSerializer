@@ -23,7 +23,7 @@ record Name(string Given, string? Middle, string Family);
 var person = new Person() {
     Name = new Name("Some", null, "Person"),
     Age = 25,
-    FavoriteWebsites = new List<string>() { "https://github.com/Tizzani" }
+    FavoriteWebsites = new List<string>() { "https://github.com/erinnmclaughlin" }
 }
 
 // get a plain query string, suitable for use in a POST request body:
