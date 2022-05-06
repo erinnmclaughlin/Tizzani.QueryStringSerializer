@@ -9,12 +9,12 @@
     <Copyright>2022 Erin McLaughlin</Copyright>
     <RepositoryUrl>https://github.com/erinnmclaughlin/Tizzani.QueryStringSerializer</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.4" />
-    <PackageReference Include="Tizzani.QueryStringSerializer" Version="1.0.1" />
+    <PackageReference Include="Tizzani.QueryStringSerializer" Version="1.0.2" />
   </ItemGroup>
 
 </Project>
