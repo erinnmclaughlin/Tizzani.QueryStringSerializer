@@ -13,7 +13,7 @@ public class QueryStringSerializerOptions
 
         if (EnumsAsStrings)
             options.Converters.Add(new JsonStringEnumConverter());
-
+        
         return options;
     }
 }

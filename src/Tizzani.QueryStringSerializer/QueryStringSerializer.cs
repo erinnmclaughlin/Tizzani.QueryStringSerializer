@@ -93,14 +93,16 @@ public static class QueryStringSerializer
 
         foreach (var p in type.GetProperties())
         {
+            var propertyType = p.PropertyType;
+            
             // Nested classes
-            if (p.PropertyType.IsClass && !typeof(IEnumerable).IsAssignableFrom(p.PropertyType))
+            if (propertyType.IsClass && !typeof(IEnumerable).IsAssignableFrom(propertyType))
             {
                 var childStringDict = stringDict
                     .Where(x => x.Key.StartsWith(p.Name + '.'))
                     .ToDictionary(kvp => kvp.Key.Replace(p.Name + '.', ""), kvp => kvp.Value);
 
-                var childDict = ToObjectDictionary(childStringDict, p.PropertyType, jsonSerializerOptions);
+                var childDict = ToObjectDictionary(childStringDict, propertyType, jsonSerializerOptions);
                 dict.Add(p.Name, childDict);
                 continue;
             }
@@ -114,11 +116,23 @@ public static class QueryStringSerializer
             var stringValue = stringDict[p.Name];
 
             // Lists
-            if (TryGetCollectionType(p.PropertyType, out var enumerableType))
+            if (TryGetCollectionType(propertyType, out var enumerableType))
             {
                 if (enumerableType.IsEnum)
                 {
                     var collection = stringValue
+                        .Where(x =>
+                        {
+                            try
+                            {
+                                Enum.Parse(enumerableType, x);
+                                return true;
+                            }
+                            catch (Exception)
+                            {
+                                return false;
+                            }
+                        })
                         .Select(x => Enum.Parse(enumerableType, x))
                         .ToList();
 
@@ -143,23 +157,36 @@ public static class QueryStringSerializer
             }
 
             // Simple cases
-            if (!p.PropertyType.IsClass || p.PropertyType == typeof(string))
+            if (propertyType.IsGenericType)
+                propertyType = propertyType.GenericTypeArguments.First();
+                
+            if (!propertyType.IsClass || propertyType == typeof(string))
             {
                 var str = stringValue.ToString();
 
-                if (p.PropertyType.IsEnum && Enum.TryParse(p.PropertyType, str, out var value))
+                if (propertyType.IsEnum)
                 {
-                    dict.Add(p.Name, value);
+                    if(Enum.TryParse(propertyType, str, out var value))
+                        dict.Add(p.Name, value);
+                    
                     continue;
                 }
 
-                if (p.PropertyType == typeof(string))
+                if (propertyType == typeof(string))
                 {
                     dict.Add(p.Name, str);
                     continue;
                 }
 
-                dict.Add(p.Name, JsonSerializer.Deserialize(str, p.PropertyType, jsonSerializerOptions));
+                try
+                {
+                    dict.Add(p.Name, JsonSerializer.Deserialize(str, p.PropertyType, jsonSerializerOptions));
+                }
+                catch (Exception)
+                {
+                    // if we fail to deserialize, that's fine; ignore the value
+                }
+                
                 continue;
             }
 
