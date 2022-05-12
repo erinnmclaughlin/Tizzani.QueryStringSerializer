@@ -52,6 +52,17 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter=1&SomeExtraneousParameter=anything", 1)]
+    [InlineData("SomeParameter=1&SomeExtraneousParameter=anything", 1)]
+    [InlineData("SomeExtraneousParameter=anything", 0)]
+    public void Deserialize_IgnoresExtraneousProperties(string queryString, int expectedValue)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeClassWithParameter<int>>(queryString);
+        result.Should().NotBeNull();
+        result!.SomeParameter.Should().Be(expectedValue);
+    }
+
+    [Theory]
     [InlineData(null)]
     [InlineData(0)]
     [InlineData(1)]
