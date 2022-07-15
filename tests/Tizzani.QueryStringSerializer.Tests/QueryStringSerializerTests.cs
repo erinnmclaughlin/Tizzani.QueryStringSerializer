@@ -163,6 +163,45 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
+    [InlineData("?SomeParameter=True", true)]
+    [InlineData("SomeParameter=False", false)]
+    [InlineData("", false)]
+    public void Deserialize_CreatesCorrectObject_ForBooleans(string queryString, bool expectedResult)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<bool>>(queryString);
+        result!.SomeParameter.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(true, "SomeParameter=True")]
+    [InlineData(false, "SomeParameter=False")]
+    public void Serialize_CreatesCorrectQueryString_ForBoolean(bool value, string expectedQueryString)
+    {
+        var result = QueryStringSerializer.Serialize(new SomeGenericClassWithParameter<bool>(value));
+        result.Should().Be(expectedQueryString);
+    }
+
+    [Theory]
+    [InlineData("?SomeParameter=True", true)]
+    [InlineData("SomeParameter=False", false)]
+    [InlineData("", null)]
+    public void Deserialize_CreatesCorrectObject_ForNullableBooleans(string queryString, bool? expectedResult)
+    {
+        var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<bool?>>(queryString);
+        result!.SomeParameter.Should().Be(expectedResult);
+    }
+
+    [Theory]
+    [InlineData(true, "SomeParameter=True")]
+    [InlineData(false, "SomeParameter=False")]
+    [InlineData(null, "")]
+    public void Serialize_CreatesCorrectQueryString_ForNullableBoolean(bool? value, string expectedQueryString)
+    {
+        var result = QueryStringSerializer.Serialize(new SomeGenericClassWithParameter<bool?>(value));
+        result.Should().Be(expectedQueryString);
+    }
+
+    [Theory]
     [InlineData("?SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]

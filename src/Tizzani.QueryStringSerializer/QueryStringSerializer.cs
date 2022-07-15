@@ -172,6 +172,14 @@ public static class QueryStringSerializer
                     continue;
                 }
 
+                if (propertyType == typeof(bool))
+                {
+                    if(Boolean.TryParse(str, out var value))
+                        dict.Add(p.Name, value);
+                    
+                    continue;
+                }
+
                 if (propertyType == typeof(string))
                 {
                     dict.Add(p.Name, str);
