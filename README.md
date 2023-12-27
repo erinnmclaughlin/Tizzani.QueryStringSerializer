@@ -4,30 +4,19 @@
 
 ## Example Usage
 
-Given the following classes:
-
-```c#
-class Person
+```csharp
+var order = new Order
 {
-    public Name Name { get; set; }
-    public int Age { get; set; }
-    public List<string> FavoriteWebsites { get; set; } = new();
-}
+    Customer = new Customer { Name = "Jack Sparrpw" },
+    Items = new List<OrderItem>
+    {
+        new OrderItem { Description = "Rum", Quantity = 5 },
+        new OrderItem { Description = "Jar of Dirt", Quantity = 1 }
+    }
+};
 
-record Name(string Given, string? Middle, string Family);
-```
-
-### Serialization
-
-```c#
-var person = new Person() {
-    Name = new Name("Some", null, "Person"),
-    Age = 25,
-    FavoriteWebsites = new List<string>() { "https://github.com/erinnmclaughlin" }
-}
-
-// get a plain query string, suitable for use in a POST request body:
-var personQs = QueryStringSerializer.Serialize(person);
+var queryString = QueryStringSerializer.Serialize(order);
+// queryString = "Customer.Name=Jack%20Sparrpw&Items=%7B%22Description%22%3A%22Rum%22,%22Quantity%22%3A5%7D&Items=%7B%22Description%22%3A%22Jar%20of%20Dirt%22,%22Quantity%22%3A1%7D";
 
 // get the query string appended to an existing URL:
 var personUrl = QueryStringSerializer.Serialize(person, "https://mysite.com/directory/search");

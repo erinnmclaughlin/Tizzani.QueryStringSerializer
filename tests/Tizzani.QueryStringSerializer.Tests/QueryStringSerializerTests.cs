@@ -8,7 +8,6 @@ namespace Tizzani.QueryStringSerializer.Tests;
 
 public class QueryStringSerializerTests
 {
-
     [Theory]
     [InlineData("?SomeParameter=hello, world!", "hello, world!")]
     [InlineData("SomeParameter=hello, world!", "hello, world!")]
@@ -28,7 +27,7 @@ public class QueryStringSerializerTests
     [InlineData("", "")]
     [InlineData("  ", "")]
     [InlineData("\n \t", "")]
-    [InlineData("hello, world!", "SomeParameter=hello,%20world!")]
+    [InlineData("hello, world!", "SomeParameter=hello%2c+world!")]
     public void Serialize_CreatesCorrectQueryString_ForStringsInGenericStringClass(string? value, string expected)
     {
         var someClass = new SomeGenericClassWithParameter<string>(value);
@@ -41,7 +40,7 @@ public class QueryStringSerializerTests
     [InlineData("", "")]
     [InlineData("  ", "")]
     [InlineData("\n \t", "")]
-    [InlineData("hello, world!", "SomeParameter=hello,%20world!")]
+    [InlineData("hello, world!", "SomeParameter=hello%2c+world!")]
     public void Serialize_CreatesCorrectQueryString_ForStringsInNonGenericStringClass(string value, string expected)
     {
         var someClass = new SomeClassWithStringParameter() { SomeParameter = value };
@@ -62,8 +61,7 @@ public class QueryStringSerializerTests
     {
         var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<int?>>(queryString);
 
-        Assert.NotNull(result);
-        Assert.Equal(expected, result.SomeParameter);
+        Assert.Equal(expected, result?.SomeParameter);
     }
 
     [Theory]
@@ -178,13 +176,12 @@ public class QueryStringSerializerTests
     [InlineData("?SomeParameter=True", true)]
     [InlineData("SomeParameter=True", true)]
     [InlineData("SomeParameter=False", false)]
-    [InlineData("", false)]
-    public void Deserialize_CreatesCorrectObject_ForBooleans(string queryString, bool expected)
+    [InlineData("", null)]
+    public void Deserialize_CreatesCorrectObject_ForBooleans(string queryString, bool? expected)
     {
         var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<bool>>(queryString);
 
-        Assert.NotNull(result);
-        Assert.Equal(expected, result.SomeParameter);
+        Assert.Equal(expected, result?.SomeParameter);
     }
 
     [Theory]
@@ -205,8 +202,7 @@ public class QueryStringSerializerTests
     {
         var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<bool?>>(queryString);
        
-        Assert.NotNull(result);
-        Assert.Equal(expected, result.SomeParameter);
+        Assert.Equal(expected, result?.SomeParameter);
     }
 
     [Theory]
@@ -261,8 +257,8 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
-    [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=0&SomeParameter=0&SomeParameter=0", 0, 0, 0)]
+    [InlineData("SomeParameter=1&SomeParameter=2&SomeParameter=3", 1, 2, 3)]
     [InlineData("SomeParameter=-1&SomeParameter=1", -1, 1)]
     [InlineData("SomeParameter=1", 1)]
     public void Serialize_CreatesCorrectQueryString_ForSystemArray(string expected, params int[] value)
@@ -293,7 +289,7 @@ public class QueryStringSerializerTests
     [InlineData("SomeParameter=1", 1)]
     public void Serialize_CreatesCorrectQueryString_ForLists(string expected, params int[] value)
     {
-        var someClass = new SomeGenericClassWithParameter<List<int>>(value.ToList());
+        var someClass = new SomeGenericClassWithParameter<List<int>>([.. value]);
         var actual= QueryStringSerializer.Serialize(someClass);
 
         Assert.Equal(expected, actual);
@@ -328,7 +324,7 @@ public class QueryStringSerializerTests
     }
 
     [Theory]
-    [InlineData("SomeParameter.SomeString=hello,world!&SomeParameter.SomeParameter=1", 1, "hello,world!")]
+    [InlineData("SomeParameter.SomeString=hello%2cworld!&SomeParameter.SomeParameter=1", 1, "hello,world!")]
     public void Serialize_CreatesCorrectQueryString_ForMoreNestedObjects(string expected, int intValue, string stringValue)
     {
         var someClassWithInt = new SomeGenericClassWithParameter<int>(intValue) { SomeString = stringValue };

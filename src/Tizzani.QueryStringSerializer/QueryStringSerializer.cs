@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Web;
 
 namespace Tizzani.QueryStringSerializer;
 
@@ -13,57 +16,45 @@ public static class QueryStringSerializer
         var jsonSerializerOptions = options.GetJsonSerializerOptions();
 
         var json = JsonSerializer.Serialize(obj, jsonSerializerOptions);
-        var dict = JsonSerializer.Deserialize<Dictionary<string, object?>>(json, jsonSerializerOptions);
 
-        string uri = "";
+        var jObject = JObject.Parse(json);
+        return ParseToken(jObject);
+    }
 
-        if (dict == null)
-            return uri;
+    private static string ParseToken(JToken? token, string prefix = "")
+    {
+        var parts = new List<string>();
 
-        foreach (var kvp in dict)
+        if (token is JObject obj)
         {
-            if (kvp.Value == null)
-                continue;
-
-            var type = kvp.Value.GetType();
-
-            if (type != typeof(JsonElement))
-                continue;
-
-            var jsonElement = (JsonElement)kvp.Value;
-
-            // Collections
-            if (jsonElement.ValueKind == JsonValueKind.Array)
+            foreach (var prop in obj)
             {
-                foreach (var val in jsonElement.EnumerateArray())
-                {
-                    var valString = val.ToString();
+                string subPrefix = string.IsNullOrEmpty(prefix) ? prop.Key : $"{prefix}.{prop.Key}";
+                string part = ParseToken(prop.Value, subPrefix);
 
-                    if (!string.IsNullOrWhiteSpace(valString))
-                        uri = QueryHelpers.AddQueryString(uri, kvp.Key, valString);
-                }
-
-                continue;
+                if (!string.IsNullOrWhiteSpace(part))
+                    parts.Add(part);
             }
-
-            if (jsonElement.ValueKind == JsonValueKind.Object)
+        }
+        else if (token is JArray array)
+        {
+            for (int i = 0; i < array.Count; i++)
             {
-                var childUri = Serialize(kvp.Value);
-                var childQuery = QueryHelpers.ParseQuery(childUri);
+                string part = ParseToken(array[i], prefix);
 
-                foreach (var cq in childQuery)
-                    uri = QueryHelpers.AddQueryString(uri, kvp.Key + "." + cq.Key, cq.Value);
-
-                continue;
+                if (!string.IsNullOrWhiteSpace(part))
+                    parts.Add(part);
             }
+        }
+        else if (token is JValue)
+        {
+            var value = token.ToString();
 
-            var valueString = kvp.Value.ToString();
-
-            if (!string.IsNullOrWhiteSpace(valueString))
-                uri = QueryHelpers.AddQueryString(uri, kvp.Key, valueString);            
+            if (!string.IsNullOrWhiteSpace(value))
+                parts.Add($"{prefix}={HttpUtility.UrlEncode(value)}");
         }
 
-        return uri.TrimStart('?');
+        return string.Join('&', parts);
     }
 
     public static string Serialize<T>(T obj, string baseUri, QueryStringSerializerOptions? options = null)
