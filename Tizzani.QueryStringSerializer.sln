@@ -5,13 +5,13 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{3CBD02B6-FAE5-452D-B13E-E9C87FED212D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApp", "samples\SampleApp\SampleApp.csproj", "{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializer", "src\Tizzani.QueryStringSerializer\Tizzani.QueryStringSerializer.csproj", "{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializer.Tests", "tests\Tizzani.QueryStringSerializer.Tests\Tizzani.QueryStringSerializer.Tests.csproj", "{92A7B016-DB03-41EB-AE12-012685696265}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tizzani.QueryStringSerializer.Blazor", "src\Tizzani.QueryStringSerializer.Blazor\Tizzani.QueryStringSerializer.Blazor.csproj", "{CFFBF1B5-6FA3-4E39-8549-08A168299189}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tizzani.QueryStringSerializer.Blazor", "src\Tizzani.QueryStringSerializer.Blazor\Tizzani.QueryStringSerializer.Blazor.csproj", "{CFFBF1B5-6FA3-4E39-8549-08A168299189}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleApp", "samples\SampleApp\SampleApp.csproj", "{3605C5B0-E6A0-4278-A42D-ECA5A01611DF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,10 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63}.Release|Any CPU.Build.0 = Release|Any CPU
 		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{326E4330-5CE1-4559-BCCC-AA6AAC3C7BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -35,12 +31,16 @@ Global
 		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFFBF1B5-6FA3-4E39-8549-08A168299189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3605C5B0-E6A0-4278-A42D-ECA5A01611DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3605C5B0-E6A0-4278-A42D-ECA5A01611DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3605C5B0-E6A0-4278-A42D-ECA5A01611DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3605C5B0-E6A0-4278-A42D-ECA5A01611DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{229CF1E5-FCA3-4DC6-A8AD-C6A089EAAD63} = {3CBD02B6-FAE5-452D-B13E-E9C87FED212D}
+		{3605C5B0-E6A0-4278-A42D-ECA5A01611DF} = {3CBD02B6-FAE5-452D-B13E-E9C87FED212D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {23096769-86AD-40DF-A8BD-F18BB45378C4}

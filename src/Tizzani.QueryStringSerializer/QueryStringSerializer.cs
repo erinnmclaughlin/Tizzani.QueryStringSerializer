@@ -77,12 +77,16 @@ public static class QueryStringSerializer
         var jsonSerializerOptions = options.GetJsonSerializerOptions();
 
         var json = GetJson<T>(uri, jsonSerializerOptions);
-        return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
+        return string.IsNullOrWhiteSpace(json) ? default : JsonSerializer.Deserialize<T?>(json, jsonSerializerOptions);
     }
 
     private static string GetJson<T>(string uri, JsonSerializerOptions jsonSerializerOptions)
     {
         var queryParams = QueryHelpers.ParseQuery(uri);
+
+        if (queryParams.Count == 0)
+            return "";
+
         var dict = queryParams.ToObjectDictionary(typeof(T), jsonSerializerOptions);
         return JsonSerializer.Serialize(dict, jsonSerializerOptions);
     }

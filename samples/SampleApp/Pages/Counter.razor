@@ -1,46 +1,72 @@
 ﻿@page "/counter"
 @using Tizzani.QueryStringSerializer.Blazor
-@implements IDisposable
 @inject NavigationManager NavigationManager
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @CurrentCount</p>
+<p role="status">Current count: @State.CurrentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<div class="d-flex gap-2 align-items-end">
+    <div>
+        <label class="form-label">Step</label>
+        <input value="@State.Step" @onchange="OnStepChanged" class="form-control" step="1" type="number" />
+    </div>
+    <div>
+        <button class="btn btn-primary" disabled="@(State.Step == 0)" @onclick="OnButtonClicked">
+            Change count by @(State.Step > 0 ? "+" : "")@State.Step
+        </button>
+    </div>
+    <div>
+        <button class="btn btn-secondary" @onclick="Reset" type="reset">
+            Reset
+        </button>
+    </div>
+</div>
 
 @code {
 
-    public int CurrentCount { get; set; }
+    private CounterState State = new(0, 1);
 
-    public void Dispose()
+    protected override void OnAfterRender(bool firstRender)
     {
-        NavigationManager.LocationChanged -= HandleLocationChanged;
+        var state = NavigationManager.GetQueryObject<CounterState>();
+
+        if (state is null)
+        {
+            Reset();
+        }
+        else if (State != state)
+        {
+            State = state;
+            StateHasChanged();
+        }
     }
 
-    protected override void OnInitialized()
+    private void OnButtonClicked()
     {
-        SetCurrentCount();
-        NavigationManager.LocationChanged += HandleLocationChanged;
+        UpdateState(State with { CurrentCount = State.CurrentCount + State.Step });
     }
 
-    private void IncrementCount()
+    private void OnStepChanged(ChangeEventArgs e)
     {
-        CurrentCount++;
-        NavigationManager.NavigateToWithQuery("counter", this);
+        if (!int.TryParse(e.Value?.ToString(), out var value))
+            return;
+
+        var state = State with { Step = value };
+        UpdateState(state);
     }
 
-    private void SetCurrentCount()
+    private void Reset()
     {
-        var counter = NavigationManager.GetQueryObject<Counter>();
-        CurrentCount = counter?.CurrentCount ?? CurrentCount;        
+        UpdateState(new CounterState(0, 1));
     }
 
-    private void HandleLocationChanged(object? obj, LocationChangedEventArgs e)
+    private void UpdateState(CounterState updatedState)
     {
-        SetCurrentCount();
-        StateHasChanged();
+        NavigationManager.NavigateToWithQuery("counter", updatedState);
     }
+
+    public record CounterState(int CurrentCount, int Step);
 }
