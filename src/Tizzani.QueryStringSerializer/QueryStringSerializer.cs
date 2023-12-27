@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -17,15 +16,15 @@ public static class QueryStringSerializer
 
         var json = JsonSerializer.Serialize(obj, jsonSerializerOptions);
 
-        var jObject = JObject.Parse(json);
+        var jObject = JsonNode.Parse(json);
         return ParseToken(jObject);
     }
 
-    private static string ParseToken(JToken? token, string prefix = "")
+    private static string ParseToken(JsonNode? token, string prefix = "")
     {
         var parts = new List<string>();
 
-        if (token is JObject obj)
+        if (token is JsonObject obj)
         {
             foreach (var prop in obj)
             {
@@ -36,7 +35,7 @@ public static class QueryStringSerializer
                     parts.Add(part);
             }
         }
-        else if (token is JArray array)
+        else if (token is JsonArray array)
         {
             for (int i = 0; i < array.Count; i++)
             {
@@ -46,7 +45,7 @@ public static class QueryStringSerializer
                     parts.Add(part);
             }
         }
-        else if (token is JValue)
+        else if (token is JsonValue)
         {
             var value = token.ToString();
 
