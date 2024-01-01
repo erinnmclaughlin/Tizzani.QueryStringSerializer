@@ -16,19 +16,14 @@ var order = new Order
 };
 
 var queryString = QueryStringSerializer.Serialize(order);
-// queryString = "Customer.Name=Jack%20Sparrpw&Items=%7B%22Description%22%3A%22Rum%22,%22Quantity%22%3A5%7D&Items=%7B%22Description%22%3A%22Jar%20of%20Dirt%22,%22Quantity%22%3A1%7D";
-
-// get the query string appended to an existing URL:
-var personUrl = QueryStringSerializer.Serialize(person, "https://mysite.com/directory/search");
+// "Customer.Name=Jack+Sparrow&Items.Description=Rum&Items.Quantity=5&Items.Description=Jar+of+Dirt&Items.Quantity=1";
 ```
 
 ### Deserialization
 
 ```c#
-// also works if personQs has a leading "?"
-var personQs = "Name.Given=Some&Name.Family=Person&Age=25&FavoriteWebsites=https%3A%2F%2Fgithub.com%2Ferinnmclaughlin";
-
-var person = QueryStringSerializer.Deserialize(personQs);
+var queryString = "Customer.Name=Jack+Sparrow&Items.Description=Rum&Items.Quantity=5&Items.Description=Jar+of+Dirt&Items.Quantity=1";
+var order = QueryStringSerializer.Deserialize<Order>(queryString);
 ```
 
 ## Other Features

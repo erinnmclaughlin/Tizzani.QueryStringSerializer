@@ -179,7 +179,7 @@ public class QueryStringSerializerTests
     [InlineData("", null)]
     public void Deserialize_CreatesCorrectObject_ForBooleans(string queryString, bool? expected)
     {
-        var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<bool>>(queryString);
+        var result = QueryStringSerializer.Deserialize<SomeGenericClassWithParameter<bool?>>(queryString);
 
         Assert.Equal(expected, result?.SomeParameter);
     }
