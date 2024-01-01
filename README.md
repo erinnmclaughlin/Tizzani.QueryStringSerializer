@@ -1,8 +1,13 @@
-<h3 align="center"><img src="./assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
-<p align="center"><b>Lightweight serializer for query strings and .NET objects.</b></p>
-<p align="center">
-    <!-- TODO: Badges -->
-</p>
+<div align="center">
+    <h3><img src="./assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
+    <p><b>Lightweight serializer for query strings and .NET objects.</b></p>
+    <div>
+        <img alt="Nuget version" src="https://img.shields.io/nuget/v/tizzani.querystringserializer">
+        <img alt="Nuget downloads" src="https://img.shields.io/nuget/dt/tizzani.querystringserializer">
+        <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/erinnmclaughlin/Tizzani.QueryStringSerializer/main">
+        <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/erinnmclaughlin/Tizzani.QueryStringSerializer/dotnet.yml">
+    </div>
+</div>
 
 <hr />
 
