@@ -1,5 +1,3 @@
-<br /><br />
-
 <h3 align="center"><img src="./assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
 <p align="center"><b>Lightweight serializer for query strings and .NET objects.</b></p>
 <p align="center">
