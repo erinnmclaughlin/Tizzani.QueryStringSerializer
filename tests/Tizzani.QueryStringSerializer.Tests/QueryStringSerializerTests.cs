@@ -401,4 +401,17 @@ public class QueryStringSerializerTests
         Assert.NotNull(result?.SomeParameter);
         Assert.Equal(someClass.SomeParameter.SomeParameter, result.SomeParameter.SomeParameter);
     }
+
+    [Fact]
+    public void Serialize_CreatesCorrectQueryString_ForDictionaries()
+    {
+        var myDict = new Dictionary<string, object?>
+        {
+            { "Name", "Erin" },
+            { "Age", 30 }
+        };
+
+        var qs = QueryStringSerializer.Serialize(myDict);
+        Assert.Equal("Name=Erin&Age=30", qs);
+    }
 }
