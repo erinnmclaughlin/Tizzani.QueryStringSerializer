@@ -7,6 +7,7 @@
 <hr />
 
 ## Installation
+Download from [NuGet](https://www.nuget.org/packages/Tizzani.QueryStringSerializer).
 ```
 dotnet add package Tizzani.QueryStringSerializer --version 8.0.0
 ```
