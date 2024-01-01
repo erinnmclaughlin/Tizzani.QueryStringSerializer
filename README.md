@@ -35,7 +35,6 @@ var order = QueryStringSerializer.Deserialize<Order>(queryString);
 
 ## Known Limitations
 
-* Collections of *objects* are not yet supported; only of primitives
 * Dictionaries are not yet supported
 
 
