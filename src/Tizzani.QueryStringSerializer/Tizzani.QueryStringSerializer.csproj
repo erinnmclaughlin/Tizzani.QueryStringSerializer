@@ -6,16 +6,17 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/erinnmclaughlin/Tizzani.QueryStringHelpers</RepositoryUrl>
+    <RepositoryUrl>https://github.com/erinnmclaughlin/Tizzani.QueryStringSerializer</RepositoryUrl>
     <Authors>erinnmclaughlin, BenMakesGames</Authors>
     <Company />
-    <Copyright>2023 Erin McLaughlin</Copyright>
+    <Copyright>2024 Erin McLaughlin</Copyright>
     <Description>Tizzani.QueryStringHelpers provides methods for serializing &amp; deserializing objects as URL-encoded query strings.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <AssemblyVersion></AssemblyVersion>
-    <Version>8.0.0-preview1</Version>
+    <Version>8.0.0</Version>
     <Title>$(AssemblyName)</Title>
     <PackageIcon>QssLogo.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/erinnmclaughlin/Tizzani.QueryStringSerializer</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
