@@ -37,3 +37,13 @@ var queryString = QueryStringSerializer.Serialize(order);
 var queryString = "Customer.Name=Jack+Sparrow&Items.Description=Rum&Items.Quantity=5&Items.Description=Jar+of+Dirt&Items.Quantity=1";
 var order = QueryStringSerializer.Deserialize<Order>(queryString);
 ```
+
+## Configuration
+To configure how query strings are serialized, use `QueryStringSerializerOptions`.
+
+```c#
+enum Status { Placed, Canceled, Completed }
+var order = new Order { Status = Status.Canceled };
+var qs1 = QueryStringSerializer.Serialize(order); // "Status=Canceled"
+var qs2 = QueryStringSerializer.Serialize(order, new() { EnumsAsStrings = false }); // "Status=1"
+```
