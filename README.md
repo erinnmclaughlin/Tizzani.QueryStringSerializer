@@ -24,7 +24,7 @@ dotnet add package Tizzani.QueryStringSerializer --version 8.0.0
 ```csharp
 var order = new Order
 {
-    Customer = new Customer { Name = "Jack Sparrpw" },
+    Customer = new Customer { Name = "Jack Sparrow" },
     Items = new List<OrderItem>
     {
         new OrderItem { Description = "Rum", Quantity = 5 },
