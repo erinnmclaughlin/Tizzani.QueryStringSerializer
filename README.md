@@ -1,8 +1,21 @@
-# Query String Serializer
+<br /><br />
 
-`Tizzani.QueryStringSerializer` provides methods for serializing & deserializing objects as URL-encoded query strings.
+<h3 align="center"><img src="./assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
+<p align="center"><b>Lightweight serializer for query strings and .NET objects.</b></p>
+<p align="center">
+    <!-- TODO: Badges -->
+</p>
+
+<hr />
+
+## Installation
+```
+dotnet add package Tizzani.QueryStringSerializer --version 8.0.0
+```
 
 ## Example Usage
+
+### Serialization
 
 ```csharp
 var order = new Order
