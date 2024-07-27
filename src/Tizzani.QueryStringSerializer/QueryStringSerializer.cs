@@ -50,12 +50,36 @@ public static class QueryStringSerializer
 
             var propertyName = key.Split('.')[0];
 
-            if (objectType.GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) is not { } property)
+            if (dict.ContainsKey(propertyName) || objectType.GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) is not { } property)
             {
                 continue;
             }
 
             var propertyType = property.PropertyType;
+
+            // Handle complex types:
+            if (key.Contains('.'))
+            {
+                if (typeof(IEnumerable).IsAssignableFrom(propertyType) && query.GetValues(key) is { Length: > 0 } complexArrayValues)
+                {
+                    throw new NotSupportedException("Collections of complex types are not supported.");
+                }
+                else
+                {
+                    var nestedQuery = new NameValueCollection();
+                    var nestedTypes = query.AllKeys
+                        .Where(x => x!.StartsWith(propertyName + ".") == true)
+                        .Select(x => new KeyValuePair<string, string?>(x!, query.Get(x)));
+
+                    foreach (var (nestedKey, nestedValue) in nestedTypes)
+                    {
+                        nestedQuery.Add(nestedKey[(propertyName.Length + 1)..], nestedValue);
+                    }
+                    dict.Add(propertyName, GetObjectDictionary(propertyType, nestedQuery));
+                }
+
+                continue;
+            }
 
             // Handle simple types:
             if (IsSimpleType(propertyType))
@@ -74,15 +98,10 @@ public static class QueryStringSerializer
                     var parsedValues = arrayValues.Select(x => ConvertSimpleType(arrayType, x)).ToArray();
                     dict.Add(key, parsedValues);
                 }
-
-                // TODO: Handle collection of complex types
-                // ..
-
-                continue;
+                else
+                {
+                }
             }
-
-            // TODO: Handle complex types
-            // ..
         }
 
         return dict;
