@@ -30,8 +30,4 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="8.*" />
-  </ItemGroup>
-
 </Project>

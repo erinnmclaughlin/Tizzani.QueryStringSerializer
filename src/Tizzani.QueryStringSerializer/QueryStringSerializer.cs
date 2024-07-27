@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Primitives;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Globalization;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
@@ -30,93 +32,102 @@ public static class QueryStringSerializer
         options ??= new QueryStringSerializerOptions();
         var jsonSerializerOptions = options.GetJsonSerializerOptions();
 
-        var qs = uri.Contains('?') ? uri.Split('?')[1] : uri;
-        var qParams = QueryHelpers.ParseQuery(qs);
-        var dict = GetObjectDictionary(typeof(T), qParams, jsonSerializerOptions);
+        var dict = GetObjectDictionary(typeof(T), HttpUtility.ParseQueryString(uri));
         var json = JsonSerializer.Serialize(dict, jsonSerializerOptions);
         return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
     }
 
-    private static Dictionary<string, object?> GetObjectDictionary(Type objectType, Dictionary<string, StringValues> qParams, JsonSerializerOptions jsonSerializerOptions)
+    private static Dictionary<string, object?> GetObjectDictionary(Type objectType, NameValueCollection query)
     {
         var dict = new Dictionary<string, object?>();
 
-        foreach (var key in qParams.Keys.Select(k => k.Split('.')[0]).Distinct())
+        foreach (var key in query.AllKeys)
         {
-            if (objectType.GetProperty(key) is not { } pInfo)
+            if (string.IsNullOrEmpty(key))
+            {
                 continue;
-
-            var pType = pInfo.PropertyType;
-
-            if (pType == typeof(string))
-            {
-                dict.Add(key, qParams[key].ToString());
             }
-            else if (typeof(IEnumerable).IsAssignableFrom(pType))
-            {
-                var arrayType = pType.GetElementType() ?? pType.GetGenericArguments()[0];
 
-                if (arrayType == typeof(string) || !arrayType.IsClass)
+            var propertyName = key.Split('.')[0];
+
+            if (objectType.GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) is not { } property)
+            {
+                continue;
+            }
+
+            var propertyType = property.PropertyType;
+
+            // Handle simple types:
+            if (IsSimpleType(propertyType))
+            {
+                dict.Add(key, ConvertSimpleType(propertyType, query[key]));
+                continue;
+            }
+
+            // Handle collection types:
+            if (typeof(IEnumerable).IsAssignableFrom(propertyType) && query.GetValues(key) is { Length: > 0 } arrayValues)
+            {
+                var arrayType = propertyType.GetElementType() ?? propertyType.GenericTypeArguments[0];
+
+                if (IsSimpleType(arrayType))
                 {
-                    dict.Add(key, qParams[key].Select(p => ParsePrimitiveType(arrayType, p, jsonSerializerOptions)));
-                    continue;
+                    var parsedValues = arrayValues.Select(x => ConvertSimpleType(arrayType, x)).ToArray();
+                    dict.Add(key, parsedValues);
                 }
 
-                var elementParams = qParams
-                    .Where(kvp => kvp.Key.StartsWith($"{key}."))
-                    .ToDictionary(kvp => kvp.Key[(key.Length + 1)..], kvp => kvp.Value);
+                // TODO: Handle collection of complex types
+                // ..
 
-                var elements = new List<object>();
-                for (int i = 0; i < elementParams.Values.Max(v => v.Count); i++)
-                {
-                    var elementDict = new Dictionary<string, StringValues>();
-                    
-                    foreach (var p in elementParams)
-                    {
-                        elementDict.Add(p.Key, p.Value[i]);
-                    }
-
-                    elements.Add(GetObjectDictionary(arrayType, elementDict, jsonSerializerOptions));
-                }
-
-                dict.Add(key, elements);
+                continue;
             }
-            else if (pType.IsClass)
-            {
-                var childParams = qParams
-                    .Where(kvp => kvp.Key.StartsWith($"{key}."))
-                    .ToDictionary(kvp => kvp.Key[(key.Length + 1)..], kvp => kvp.Value);
 
-                dict.Add(key, GetObjectDictionary(pType, childParams, jsonSerializerOptions));
-            }
-            else
-            {
-                if (ParsePrimitiveType(pType, qParams[key].ToString(), jsonSerializerOptions) is { } value)
-                    dict.Add(key, value);
-            }
+            // TODO: Handle complex types
+            // ..
         }
 
         return dict;
     }
 
-    private static object? ParsePrimitiveType(Type targetType, string? value, JsonSerializerOptions jsonSerializerOptions)
+    private static object? CreateDefaultInstanceOfType(Type type)
     {
-        try
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
+    }
+
+    private static object? ConvertSimpleType(Type targetType, object? valueToConvert)
+    {
+        var stringValue = valueToConvert?.ToString();
+
+        if (targetType == typeof(string))
         {
-            if (targetType == typeof(string))
-            {
-                return value;
-            }
-            else if (targetType.IsEnum)
-            {
-                return Enum.Parse(targetType, value ?? "");
-            }
-            else
-            {
-                return JsonSerializer.Deserialize(value ?? "", targetType, jsonSerializerOptions);
-            }
+            return stringValue;
         }
-        catch { return null; }
+
+        if (string.IsNullOrEmpty(stringValue))
+        {
+            return CreateDefaultInstanceOfType(targetType);
+        }
+
+        var typeConverter = TypeDescriptor.GetConverter(targetType);
+        return typeConverter.ConvertFromString(null, CultureInfo.InvariantCulture, stringValue);
+    }
+
+    private static bool IsSimpleType(Type type)
+    {
+        if (Nullable.GetUnderlyingType(type) is { } underlyingType)
+        {
+            type = underlyingType;
+        }
+
+        return type.IsPrimitive
+            || type.IsEnum
+            || type == typeof(string)
+            || type == typeof(decimal)
+            || type == typeof(DateTime)
+            || type == typeof(DateTimeOffset)
+            || type == typeof(TimeSpan)
+            || type == typeof(DateOnly)
+            || type == typeof(TimeOnly)
+            || type == typeof(Guid);
     }
 
     private static string ParseToken(JsonNode? token, string prefix = "")
