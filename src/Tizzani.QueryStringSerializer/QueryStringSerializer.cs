@@ -107,8 +107,24 @@ public static class QueryStringSerializer
             return CreateDefaultInstanceOfType(targetType);
         }
 
+        if (targetType.IsEnum)
+        {
+            return Enum.TryParse(targetType, stringValue, true, out var enumValue) ? enumValue : CreateDefaultInstanceOfType(targetType);
+        }
+
+        if (Nullable.GetUnderlyingType(targetType) is { IsEnum: true } enumType)
+        {
+            return Enum.TryParse(enumType, stringValue, true, out var enumValue) ? enumValue : CreateDefaultInstanceOfType(targetType);
+        }
+
         var typeConverter = TypeDescriptor.GetConverter(targetType);
-        return typeConverter.ConvertFromString(null, CultureInfo.InvariantCulture, stringValue);
+
+        if (typeConverter.IsValid(stringValue))
+        {
+            return typeConverter.ConvertFromString(null, CultureInfo.InvariantCulture, stringValue);
+        }
+
+        return CreateDefaultInstanceOfType(targetType);
     }
 
     private static bool IsSimpleType(Type type)
