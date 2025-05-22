@@ -9,7 +9,7 @@ namespace Tizzani.QueryStringSerializer;
 
 public static class QueryStringSerializer
 {
-    public static string Serialize<T>(T obj, string baseUri, QueryStringSerializerOptions? options = null)
+    public static string Serialize<T>(string baseUri, T obj, QueryStringSerializerOptions? options = null)
     {
         return $"{baseUri}?{Serialize(obj, options)}";
     }
@@ -107,14 +107,13 @@ public static class QueryStringSerializer
             {
                 return value;
             }
-            else if (targetType.IsEnum)
+            
+            if (targetType.IsEnum)
             {
                 return Enum.Parse(targetType, value ?? "");
             }
-            else
-            {
-                return JsonSerializer.Deserialize(value ?? "", targetType, jsonSerializerOptions);
-            }
+            
+            return JsonSerializer.Deserialize(value ?? "", targetType, jsonSerializerOptions);
         }
         catch { return null; }
     }

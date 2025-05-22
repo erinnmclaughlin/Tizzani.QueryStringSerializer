@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Tizzani.QueryStringSerializer.Tests.Mocks;
-using Xunit;
+﻿using Tizzani.QueryStringSerializer.Tests.Mocks;
 
 namespace Tizzani.QueryStringSerializer.Tests;
 
@@ -43,7 +39,7 @@ public class QueryStringSerializerTests
     [InlineData("hello, world!", "SomeParameter=hello%2c+world!")]
     public void Serialize_CreatesCorrectQueryString_ForStringsInNonGenericStringClass(string value, string expected)
     {
-        var someClass = new SomeClassWithStringParameter() { SomeParameter = value };
+        var someClass = new SomeClassWithStringParameter { SomeParameter = value };
         var actual = QueryStringSerializer.Serialize(someClass);
 
         Assert.Equal(expected, actual);

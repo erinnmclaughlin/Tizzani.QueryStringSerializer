@@ -1,21 +1,20 @@
 ﻿@page "/counter"
-@using Tizzani.QueryStringSerializer.Blazor
 @inject NavigationManager NavigationManager
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @State.CurrentCount</p>
+<p role="status">Current count: @_state.CurrentCount</p>
 
 <div class="d-flex gap-2 align-items-end">
     <div>
         <label class="form-label">Step</label>
-        <input value="@State.Step" @onchange="OnStepChanged" class="form-control" step="1" type="number" />
+        <input value="@_state.Step" @onchange="OnStepChanged" class="form-control" step="1" type="number" />
     </div>
     <div>
-        <button class="btn btn-primary" disabled="@(State.Step == 0)" @onclick="OnButtonClicked">
-            Change count by @(State.Step > 0 ? "+" : "")@State.Step
+        <button class="btn btn-primary" disabled="@(_state.Step == 0)" @onclick="OnButtonClicked">
+            Change count by @(_state.Step > 0 ? "+" : "")@_state.Step
         </button>
     </div>
     <div>
@@ -27,7 +26,7 @@
 
 @code {
 
-    private CounterState State = new(0, 1);
+    private CounterState _state = new();
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -37,16 +36,16 @@
         {
             Reset();
         }
-        else if (State != state)
+        else if (_state != state)
         {
-            State = state;
+            _state = state;
             StateHasChanged();
         }
     }
 
     private void OnButtonClicked()
     {
-        UpdateState(State with { CurrentCount = State.CurrentCount + State.Step });
+        UpdateState(_state with { CurrentCount = _state.CurrentCount + _state.Step });
     }
 
     private void OnStepChanged(ChangeEventArgs e)
@@ -54,13 +53,13 @@
         if (!int.TryParse(e.Value?.ToString(), out var value))
             return;
 
-        var state = State with { Step = value };
+        var state = _state with { Step = value };
         UpdateState(state);
     }
 
     private void Reset()
     {
-        UpdateState(new CounterState(0, 1));
+        UpdateState(new CounterState());
     }
 
     private void UpdateState(CounterState updatedState)
@@ -68,5 +67,5 @@
         NavigationManager.NavigateToWithQuery("counter", updatedState);
     }
 
-    public record CounterState(int CurrentCount, int Step);
+    public sealed record CounterState(int CurrentCount = 0, int Step = 1);
 }
