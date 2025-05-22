@@ -14,7 +14,7 @@
 ## Installation
 Download from [NuGet](https://www.nuget.org/packages/Tizzani.QueryStringSerializer).
 ```
-dotnet add package Tizzani.QueryStringSerializer --version 9.0.0
+dotnet add package Tizzani.QueryStringSerializer --version 9.1.1
 ```
 
 ## Example Usage

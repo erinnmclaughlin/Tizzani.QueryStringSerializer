@@ -11,43 +11,43 @@ namespace Tizzani.QueryStringSerializer;
 
 public static class QueryStringSerializer
 {
+    internal static readonly JsonSerializerOptions DefaultSerializerOptions;
+
+    static QueryStringSerializer()
+    {
+        DefaultSerializerOptions = new JsonSerializerOptions();
+        DefaultSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    }
+    
     /// <summary>
     /// Serializes an object into a query string format.
     /// </summary>
     /// <param name="uri">The destination URI.</param>
     /// <param name="obj">The object to serialize into a query string.</param>
-    /// <param name="options">The options to use for serialization.</param>
-    /// <typeparam name="T">The type being serialized.</typeparam>
+    /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> to use for serialization.</param>
     /// <returns>The resulting uri and query string.</returns>
-    public static string Serialize<T>(
+    public static string Serialize(
         [StringSyntax("Uri")] string uri,
-        T? obj,
-        JsonSerializerOptions? options = null)
+        object? obj,
+        JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        return obj is null ? uri : $"{uri}?{Serialize(obj, options)}";
+        return obj is null ? uri : $"{uri}?{Serialize(obj, jsonSerializerOptions)}";
     }
 
     /// <summary>
     /// Serializes an object into a query string format.
     /// </summary>
     /// <param name="obj">The object to serialize into a query string.</param>
-    /// <param name="options">The options to use for serialization.</param>
-    /// <typeparam name="T">The type being serialized.</typeparam>
+    /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> to use for serialization.</param>
     /// <returns>The resulting uri and query string.</returns>
-    public static string Serialize<T>(
-        T? obj,
-        JsonSerializerOptions? options = null)
+    public static string Serialize(
+        object? obj,
+        JsonSerializerOptions? jsonSerializerOptions = null)
     {
         if (obj is null) 
             return "";
-
-        if (options == null)
-        {
-            options = new JsonSerializerOptions();
-            options.Converters.Add(new JsonStringEnumConverter());
-        }
         
-        var json = JsonSerializer.Serialize(obj, options);
+        var json = JsonSerializer.Serialize(obj, jsonSerializerOptions ?? DefaultSerializerOptions);
 
         var jObject = JsonNode.Parse(json);
         return ParseToken(jObject);
@@ -57,24 +57,20 @@ public static class QueryStringSerializer
     /// Deserializes a query string into an object of the specified type.
     /// </summary>
     /// <param name="uri">The uri that contains the query string.</param>
-    /// <param name="options">The options to use for deserialization.</param>
+    /// <param name="jsonSerializerOptions">The <see cref="JsonSerializerOptions"/> to use for serialization.</param>
     /// <typeparam name="T">The type to deserialize to.</typeparam>
     /// <returns></returns>
     public static T? Deserialize<T>(
         [StringSyntax("Uri")] string uri, 
-        JsonSerializerOptions? options = null)
+        JsonSerializerOptions? jsonSerializerOptions = null)
     {
-        if (options == null)
-        {
-            options = new JsonSerializerOptions();
-            options.Converters.Add(new JsonStringEnumConverter());
-        }
+        jsonSerializerOptions ??= DefaultSerializerOptions;
 
         var qs = uri.Contains('?') ? uri.Split('?')[1] : uri;
         var qParams = QueryHelpers.ParseQuery(qs);
-        var dict = GetObjectDictionary(typeof(T), qParams, options);
-        var json = JsonSerializer.Serialize(dict, options);
-        return JsonSerializer.Deserialize<T>(json, options);
+        var dict = GetObjectDictionary(typeof(T), qParams, jsonSerializerOptions);
+        var json = JsonSerializer.Serialize(dict, jsonSerializerOptions);
+        return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
     }
 
     private static Dictionary<string, object?> GetObjectDictionary(Type objectType, Dictionary<string, StringValues> qParams, JsonSerializerOptions jsonSerializerOptions)
