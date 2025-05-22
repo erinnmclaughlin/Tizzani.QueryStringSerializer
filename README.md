@@ -1,19 +1,17 @@
-<div align="center">
-    <h3><img src="https://raw.githubusercontent.com/erinnmclaughlin/Tizzani.QueryStringSerializer/main/assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
-    <p><b>Lightweight serializer for query strings and .NET objects.</b></p>
-    <div>
-        <img alt="Nuget version" src="https://img.shields.io/nuget/v/tizzani.querystringserializer">
-        <img alt="Nuget downloads" src="https://img.shields.io/nuget/dt/tizzani.querystringserializer">
-        <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/erinnmclaughlin/Tizzani.QueryStringSerializer/main">
-        <img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/erinnmclaughlin/Tizzani.QueryStringSerializer/dotnet.yml">
-    </div>
-</div>
+# Query String Serializer
 
-<hr />
+**Lightweight serializer for query strings and .NET objects.**
+
+![NuGet Version](https://img.shields.io/nuget/v/tizzani.querystringserializer)
+![NuGet Downloads](https://img.shields.io/nuget/dt/tizzani.querystringserializer)
+![Last Commit](https://img.shields.io/github/last-commit/erinnmclaughlin/Tizzani.QueryStringSerializer/main)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/erinnmclaughlin/Tizzani.QueryStringSerializer/dotnet.yml)
+
+---
 
 ## Installation
 Download from [NuGet](https://www.nuget.org/packages/Tizzani.QueryStringSerializer).
-```
+```sh
 dotnet add package Tizzani.QueryStringSerializer
 ```
 
@@ -50,5 +48,5 @@ To configure how query strings are serialized, use `QueryStringSerializerOptions
 enum Status { Placed, Canceled, Completed }
 var order = new Order { Status = Status.Canceled };
 var qs1 = QueryStringSerializer.Serialize(order); // "Status=Canceled"
-var qs2 = QueryStringSerializer.Serialize(order, new() { EnumsAsStrings = false }); // "Status=1"
+var qs2 = QueryStringSerializer.Serialize(order, JsonSerializerOptions.Default); // "Status=1"
 ```
