@@ -7,14 +7,6 @@
 ![Last Commit](https://img.shields.io/github/last-commit/erinnmclaughlin/Tizzani.QueryStringSerializer/main)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/erinnmclaughlin/Tizzani.QueryStringSerializer/dotnet.yml)
 
----
-
-## Installation
-Download from [NuGet](https://www.nuget.org/packages/Tizzani.QueryStringSerializer).
-```sh
-dotnet add package Tizzani.QueryStringSerializer
-```
-
 ## Example Usage
 
 ### Serialization
@@ -49,4 +41,10 @@ enum Status { Placed, Canceled, Completed }
 var order = new Order { Status = Status.Canceled };
 var qs1 = QueryStringSerializer.Serialize(order); // "Status=Canceled"
 var qs2 = QueryStringSerializer.Serialize(order, JsonSerializerOptions.Default); // "Status=1"
+```
+
+## Installation
+Download from [NuGet](https://www.nuget.org/packages/Tizzani.QueryStringSerializer).
+```sh
+dotnet add package Tizzani.QueryStringSerializer
 ```
