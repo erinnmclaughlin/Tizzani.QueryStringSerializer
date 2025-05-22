@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
@@ -9,13 +10,36 @@ namespace Tizzani.QueryStringSerializer;
 
 public static class QueryStringSerializer
 {
-    public static string Serialize<T>(string baseUri, T obj, QueryStringSerializerOptions? options = null)
+    /// <summary>
+    /// Serializes an object into a query string format.
+    /// </summary>
+    /// <param name="uri">The destination URI.</param>
+    /// <param name="obj">The object to serialize into a query string.</param>
+    /// <param name="options">The options to use for serialization.</param>
+    /// <typeparam name="T">The type being serialized.</typeparam>
+    /// <returns>The resulting uri and query string.</returns>
+    public static string Serialize<T>(
+        [StringSyntax("Uri")] string uri,
+        T? obj,
+        QueryStringSerializerOptions? options = null)
     {
-        return $"{baseUri}?{Serialize(obj, options)}";
+        return obj is null ? uri : $"{uri}?{Serialize(obj, options)}";
     }
 
-    public static string Serialize<T>(T obj, QueryStringSerializerOptions? options = null)
+    /// <summary>
+    /// Serializes an object into a query string format.
+    /// </summary>
+    /// <param name="obj">The object to serialize into a query string.</param>
+    /// <param name="options">The options to use for serialization.</param>
+    /// <typeparam name="T">The type being serialized.</typeparam>
+    /// <returns>The resulting uri and query string.</returns>
+    public static string Serialize<T>(
+        T? obj,
+        QueryStringSerializerOptions? options = null)
     {
+        if (obj is null) 
+            return "";
+        
         options ??= new QueryStringSerializerOptions();
         var jsonSerializerOptions = options.GetJsonSerializerOptions();
 
@@ -25,7 +49,16 @@ public static class QueryStringSerializer
         return ParseToken(jObject);
     }
 
-    public static T? Deserialize<T>(string uri, QueryStringSerializerOptions? options = null)
+    /// <summary>
+    /// Deserializes a query string into an object of the specified type.
+    /// </summary>
+    /// <param name="uri">The uri that contains the query string.</param>
+    /// <param name="options">The options to use for deserialization.</param>
+    /// <typeparam name="T">The type to deserialize to.</typeparam>
+    /// <returns></returns>
+    public static T? Deserialize<T>(
+        [StringSyntax("Uri")] string uri, 
+        QueryStringSerializerOptions? options = null)
     {
         options ??= new QueryStringSerializerOptions();
         var jsonSerializerOptions = options.GetJsonSerializerOptions();
