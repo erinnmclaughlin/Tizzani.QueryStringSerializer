@@ -1,5 +1,5 @@
 <div align="center">
-    <h3><img src="./assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
+    <h3><img src="https://raw.githubusercontent.com/erinnmclaughlin/Tizzani.QueryStringSerializer/main/assets/QssLogo.png" width="70"><br /><b>Query String Serializer</b></h3>
     <p><b>Lightweight serializer for query strings and .NET objects.</b></p>
     <div>
         <img alt="Nuget version" src="https://img.shields.io/nuget/v/tizzani.querystringserializer">

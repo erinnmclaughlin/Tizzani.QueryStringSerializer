@@ -1,4 +1,5 @@
-﻿using Tizzani.QueryStringSerializer.Tests.Mocks;
+﻿using System.Text.Json;
+using Tizzani.QueryStringSerializer.Tests.Mocks;
 
 namespace Tizzani.QueryStringSerializer.Tests;
 
@@ -374,11 +375,10 @@ public class QueryStringSerializerTests
     [Fact]
     public void Serialize_SerializesEnumAsInt_WhenOptionsHaveEnumAsStringAsFalse()
     {
-        var options = new QueryStringSerializerOptions { EnumsAsStrings = false };
         var someClass = new SomeGenericClassWithParameter<SomeEnum>(SomeEnum.BigBanana);
 
         var expected = $"SomeParameter={(int)SomeEnum.BigBanana}";
-        var actual = QueryStringSerializer.Serialize(someClass, options);
+        var actual = QueryStringSerializer.Serialize(someClass, JsonSerializerOptions.Default);
 
         Assert.Equal(expected, actual);
     }

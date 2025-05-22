@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using Tizzani.QueryStringSerializer;
 
 // ReSharper disable once CheckNamespace
@@ -40,7 +41,7 @@ public static class NavigationManagerExtensions
         this NavigationManager navManager,
         [StringSyntax("Uri")] string uri, 
         T? obj,
-        QueryStringSerializerOptions options,
+        JsonSerializerOptions options,
         bool forceLoad = false,
         bool replace = false)
     {
@@ -67,7 +68,7 @@ public static class NavigationManagerExtensions
     /// <param name="options">The options to use for deserialization.</param>
     /// <typeparam name="T">The type to deserialize to.</typeparam>
     /// <returns>The deserialized object.</returns>
-    public static T? GetQueryObject<T>(this NavigationManager navManager, QueryStringSerializerOptions options)
+    public static T? GetQueryObject<T>(this NavigationManager navManager, JsonSerializerOptions options)
     {
         var qs = navManager.ToAbsoluteUri(navManager.Uri).Query;
         return QueryStringSerializer.Deserialize<T>(qs, options);

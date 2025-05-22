@@ -4,6 +4,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Web;
 
 namespace Tizzani.QueryStringSerializer;
@@ -21,7 +22,7 @@ public static class QueryStringSerializer
     public static string Serialize<T>(
         [StringSyntax("Uri")] string uri,
         T? obj,
-        QueryStringSerializerOptions? options = null)
+        JsonSerializerOptions? options = null)
     {
         return obj is null ? uri : $"{uri}?{Serialize(obj, options)}";
     }
@@ -35,15 +36,18 @@ public static class QueryStringSerializer
     /// <returns>The resulting uri and query string.</returns>
     public static string Serialize<T>(
         T? obj,
-        QueryStringSerializerOptions? options = null)
+        JsonSerializerOptions? options = null)
     {
         if (obj is null) 
             return "";
-        
-        options ??= new QueryStringSerializerOptions();
-        var jsonSerializerOptions = options.GetJsonSerializerOptions();
 
-        var json = JsonSerializer.Serialize(obj, jsonSerializerOptions);
+        if (options == null)
+        {
+            options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonStringEnumConverter());
+        }
+        
+        var json = JsonSerializer.Serialize(obj, options);
 
         var jObject = JsonNode.Parse(json);
         return ParseToken(jObject);
@@ -58,16 +62,19 @@ public static class QueryStringSerializer
     /// <returns></returns>
     public static T? Deserialize<T>(
         [StringSyntax("Uri")] string uri, 
-        QueryStringSerializerOptions? options = null)
+        JsonSerializerOptions? options = null)
     {
-        options ??= new QueryStringSerializerOptions();
-        var jsonSerializerOptions = options.GetJsonSerializerOptions();
+        if (options == null)
+        {
+            options = new JsonSerializerOptions();
+            options.Converters.Add(new JsonStringEnumConverter());
+        }
 
         var qs = uri.Contains('?') ? uri.Split('?')[1] : uri;
         var qParams = QueryHelpers.ParseQuery(qs);
-        var dict = GetObjectDictionary(typeof(T), qParams, jsonSerializerOptions);
-        var json = JsonSerializer.Serialize(dict, jsonSerializerOptions);
-        return JsonSerializer.Deserialize<T>(json, jsonSerializerOptions);
+        var dict = GetObjectDictionary(typeof(T), qParams, options);
+        var json = JsonSerializer.Serialize(dict, options);
+        return JsonSerializer.Deserialize<T>(json, options);
     }
 
     private static Dictionary<string, object?> GetObjectDictionary(Type objectType, Dictionary<string, StringValues> qParams, JsonSerializerOptions jsonSerializerOptions)

@@ -9,7 +9,7 @@
     <Copyright>2025 Erin McLaughlin</Copyright>
     <RepositoryUrl>https://github.com/erinnmclaughlin/Tizzani.QueryStringSerializer</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>9.0.0</Version>
+    <Version>9.1.0</Version>
     <PackageIcon>QssBlazorLogo.png</PackageIcon>
   </PropertyGroup>
 
